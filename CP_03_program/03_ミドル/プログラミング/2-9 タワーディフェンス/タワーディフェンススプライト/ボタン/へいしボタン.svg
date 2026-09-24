@@ -1,0 +1,14 @@
+<svg version="1.1" width="147" height="147" viewBox="-1 -1 147 147" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <radialGradient id="grad_1" cx="0.523" cy="0.4763" r="0.68081">
+      <stop offset="0" stop-color="#FFFFCC" stop-opacity="1"/>
+      <stop offset="1" stop-color="#CCCC00" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+  <!-- Exported by Scratch - http://scratch.mit.edu/ -->
+  <path id="ID0.8849144177511334" fill="url(#grad_1)" stroke="#000000" stroke-width="6" d="M 163 92 L 320 92 L 320 249 L 163 249 L 163 92 Z " transform="matrix(0.8904907703399658, 0, 0, 0.8904907703399658, -141.6, -79.25)"/>
+  <image id="へいし1" width="26" height="31" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAfCAYAAAD5h919AAACs0lEQVR42qVWQWsTQRSe4l6MEM1BmoJBcWmOiSleFCyF3Ar6C1pi7D2BXvU3FJJ7DZFepPRiIUUw0PTQ3rK2UCSIVYiQlB4KQtPjut9s3jDZnZ3dbAbCzr7Zed/7vvfmTQwWYaytleygtZ2d5lwUH0YUgEKhwN+Xlgpirdu1aGpHATR0IAAg5/n8s4l1vJ+efufrY1BbB2aEgcgAqVRSzK+v//nAdWBGHBB6B5iCrRLMiAMSB8zHSE54nIH9lmUFS0dsVIlH1CpWxMZbIGM/E6yMqJHCKZxsb38Uto2NdxOBYR0VqGUUNggEzslxo9HwnikOUq/XaU2wMoKckgzkBA4IhGTc3Kz6WJfLZb4vMiMCwUY43tqqiUrLPzZZrdnw5ZIASD5tjvARKgcySRLw6AG2srLMStUKq5bKWqlzy694gWmlI7kQISWWKgxPkqxZqwcCofLkotAWg5xkyhMG5AQYAcplLleeUrqxUZwliog6RaVS4fYH/W8Masrdw5sbVTc3FHeLD4wA8Xz55Cmbz91xvjpjl5/2+HcXfy7cIJzf7dU52/v6e27qc0SMSMb53CJLvXjjVqDZdW2/Ftnl2U/24WBfCRLaVFHKh4dHQpL3z++7OTn5wp9wjnHsMGr9OA8ECZRO1UJur46ciJ3JgdqRDkQpHSVRZoezg4FzJL9T/wPjuw+t6W9Yb0eGfNRMASR386AmGhmIZJS7BJyvr7/1FYp8xmIxIjC6DsAkmzX5vNPpcCBiGvtfkKpD7O5+Zul0WtjRIYjxTP/r5NbTau2zTCbDhsMhG41GU1/xoUCDwV+2uvqaz/v9vrAvLDyaYFssFu12ux2v6rAZLG5u3Nwkk/eYaWZF4qn/wT4YzMgokUiIOfIDCSlyBOKyZkzHJhRovNnu9Xpem28+c46mcaYb/wEpErALxvtKGwAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==" transform="matrix(2.3879072666168213, 0, 0, 2.3879072666168213, 43.3, 23.15)"/>
+  <path id="ID0.7748171440325677" fill="#FFFF99" stroke="#666600" stroke-width="2" d="M 199.200 221.200 C 203.614 221.200 207.614 222.993 210.511 225.889 C 213.407 228.786 215.200 232.786 215.200 237.200 C 215.200 241.614 213.407 245.614 210.511 248.511 C 207.614 251.407 203.614 253.200 199.200 253.200 C 194.786 253.200 190.786 251.407 187.889 248.511 C 184.993 245.614 183.200 241.614 183.200 237.200 C 183.200 232.786 184.993 228.786 187.889 225.889 C 190.786 222.993 194.786 221.200 199.200 221.200 Z " transform="matrix(1, 0, 0, 1, -170.55, -118)"/>
+  <text id="ID0.14946668315678835" fill="#000000" x="191.2" y="226.45" text-anchor="start" font-family="Helvetica" font-size="22" transform="matrix(1, 0, 0, 1, 19.3, 106.1)">P</text>
+  <text id="ID0.9121663789264858" fill="#000000" x="222" y="225.85" text-anchor="start" font-family="Helvetica" font-size="22" transform="matrix(1, 0, 0, 1, 53, 105.35)">100</text>
+</svg>

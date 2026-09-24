@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt)
+    if (mode === 0) {
+        premode = 0
+        mode = 4
+    } else if (mode === 4 && onplayer()) {
+        goalmode = 1
+        mode = 5
+    }
+}
+
+function onmove_canvas(evt) {
+    if (mode === 5) {
+        mouse = mousezahyo(canvas, evt)
+        playerp.x = player.x
+        playerp.y = player.y
+        playerdousa()
+        if (hcenter() && vcenter()) {
+            tuukashori(200, 10)
+            if (goalmode === 1 && map1[player.y][player.x] === 3) {
+                mode = 9
+            }
+        }
+        if (playerp.x !== player.x || playerp.y !== player.y) {
+            tekidousa(100)
+        }
+        if (hantei()) {
+            mode = 8
+        }
+    }
+}
+
+function mainloop() {
+    draw()
+}
+
+function drawmap() {
+    fillblack(24, 24, 432, 432)
+    for (let j = 0; j < 11; j++) {
+         for (let i = 0; i < 11; i++) {
+            if (map1[j][i] === 8) {
+                ctx.drawImage(wall, i * 48 - 24, j * 48 - 24)
+            } else if (map1[j][i] === 3) {
+                ctx.drawImage(goal[goalmode], i * 48 - 24, j * 48 - 24)
+            } else if (map1[j][i] === 1) {
+                fillblue48(i, j)
+            }
+        }
+    }
+    ctx.drawImage(playerimg, player.x * 48 - 24, player.y * 48 - 24)
+    ctx.drawImage(enemy[tekimuki], teki.x * 48 - 24, teki.y * 48 - 24)
+    drawscore(score)
+}
+
+function draw() {
+    if (mode === 0) {
+        fillblack(0, 0, 640, 480)
+        let xs = (window1.sx - window1.sy) / 2
+        for (let j = 0; j < 5; j++) {
+            for (let i = 0; i < 5; i++) {
+                if (i !== 2) {
+                        ctx.drawImage(wall, xs + 96 * i, 96 * j, 96, 96)
+                }
+            }
+        }
+        ctx.drawImage(title, xs + 96, 96)
+    } else if (mode === 4) {
+        haikeiwall()
+        drawmap()
+        drawmessage(0)
+    } else if (mode === 5) {
+        drawmap()
+        drawmessage(1)
+    } else if (mode === 8) {
+        drawmap()
+        drawmessage(4)
+        drawcenter("Game Over", 18, 64)
+    } else if (mode === 9) {
+        drawmap()
+        if (allclear() === 1) {
+            drawmessage(2)
+            drawcenter("CLEAR!", 18, 96)
+        } else {
+            drawmessage(3)
+            drawcenter("GOAL!", 48, 96)
+        }
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="wall" src="wall.png" style="display:none" />
+<img id="title" src="title.png" style="display:none" />
+<img id="minititle" src="minititle.png" style="display:none" />
+<img id="playerimg" src="player.gif" style="display:none" />
+<img class="goal" src="goal0.png" style="display:none" />
+<img class="goal" src="goal1.png" style="display:none" />
+<img id="warp" src="warp.png" style="display:none" />
+<img class="message" src="message0.png" style="display:none" />
+<img class="message" src="message1.png" style="display:none" />
+<img class="message" src="message2.png" style="display:none" />
+<img class="message" src="message3.png" style="display:none" />
+<img class="message" src="message4.png" style="display:none" />
+<img class="message" src="message5.png" style="display:none" />
+<img class="message" src="message6.png" style="display:none" />
+<img id="scoreboard" src="score.png" style="display:none" />
+<img class="enemy" src="enemy0.gif" style="display:none" />
+<img class="enemy" src="enemy1.gif" style="display:none" />
+</body>
+</html>

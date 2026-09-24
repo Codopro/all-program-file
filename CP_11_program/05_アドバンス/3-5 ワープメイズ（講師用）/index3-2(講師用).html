@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) //マウスの座標を得る
+}
+
+//マウスが動いた時にやること
+function onmove_canvas(evt) {
+}
+
+//一定時間おきにやること
+function mainloop() {
+    draw() //画面をえがく処理を呼ぶ
+}
+
+//迷路などをえがく
+function drawmap() {
+}
+
+//画面をえがく
+function draw() {
+    for (let i = 0; i < 2; i++) { //【追加】2列についてくり返す
+        ctx.drawImage(wall, 96 * i, 0, 96, 96) //【変更】壁画像を表示
+    } //【追加】
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="wall" src="wall.png" style="display:none" /> <!-- 壁画像おき場 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="minititle" src="minititle.png" style="display:none" /> <!-- ミニタイトル画像おき場 -->
+<img id="playerimg" src="player.gif" style="display:none" /> <!-- プレイヤー画像おき場 -->
+<img class="goal" src="goal0.png" style="display:none" /> <!-- ゴール画像[0]おき場 -->
+<img class="goal" src="goal1.png" style="display:none" /> <!-- ゴール画像[1]おき場 -->
+<img id="warp" src="warp.png" style="display:none" /> <!-- ワープ画像おき場 -->
+<img class="message" src="message0.png" style="display:none" /> <!-- メッセージ画像[0]おき場 -->
+<img class="message" src="message1.png" style="display:none" /> <!-- メッセージ画像[1]おき場 -->
+<img class="message" src="message2.png" style="display:none" /> <!-- メッセージ画像[2]おき場 -->
+<img class="message" src="message3.png" style="display:none" /> <!-- メッセージ画像[3]おき場 -->
+<img class="message" src="message4.png" style="display:none" /> <!-- メッセージ画像[4]おき場 -->
+<img class="message" src="message5.png" style="display:none" /> <!-- メッセージ画像[5]おき場 -->
+<img class="message" src="message6.png" style="display:none" /> <!-- メッセージ画像[6]おき場 -->
+<img id="scoreboard" src="score.png" style="display:none" /> <!-- スコアボード画像おき場 -->
+<img class="enemy" src="enemy0.gif" style="display:none" /> <!-- 敵画像[0]おき場 -->
+<img class="enemy" src="enemy1.gif" style="display:none" /> <!-- 敵画像[1]おき場 -->
+</body>
+</html>

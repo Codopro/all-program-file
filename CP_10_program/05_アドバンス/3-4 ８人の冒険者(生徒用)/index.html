@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+//ゲームの開始の時にやること
+function start() {
+    timers = setInterval(mainloop, timer)
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    moused = mousezahyo(canvas, evt)
+}
+
+//一定時間おきにやること
+function mainloop() {
+    draw()
+}
+
+//結果を計算する
+function kekkakeisan() {
+}
+
+//画面をえがく
+function draw() {
+    ctx.fillStyle = 'Yellow'
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="630" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="base" src="base0.jpg" style="display:none" /> <!-- 背景[0]の画像おき場 -->
+<img class="base" src="base1.jpg" style="display:none" /> <!-- 背景[1]の画像おき場 -->
+<img class="guides" src="guides0.png" style="display:none" /> <!-- ガイド[0]の画像おき場 -->
+<img class="guides" src="guides1.jpg" style="display:none" /> <!-- ガイド[1]の画像おき場 -->
+<img class="guides" src="guides2.jpg" style="display:none" /> <!-- ガイド[2]の画像おき場 -->
+<img class="guides" src="guides3.jpg" style="display:none" /> <!-- ガイド[3]の画像おき場 -->
+<img class="guides" src="guides4.jpg" style="display:none" /> <!-- ガイド[4]の画像おき場 -->
+<img class="guides" src="guides5.jpg" style="display:none" /> <!-- ガイド[5]の画像おき場 -->
+<img class="chara" src="char0.jpg" style="display:none" /> <!-- キャラ[0]の画像おき場 -->
+<img class="chara" src="char1.jpg" style="display:none" /> <!-- キャラ[1]の画像おき場 -->
+<img class="chara" src="char2.jpg" style="display:none" /> <!-- キャラ[2]の画像おき場 -->
+<img class="chara" src="char3.jpg" style="display:none" /> <!-- キャラ[3]の画像おき場 -->
+<img class="chara" src="char4.jpg" style="display:none" /> <!-- キャラ[4]の画像おき場 -->
+<img class="chara" src="char5.jpg" style="display:none" /> <!-- キャラ[5]の画像おき場 -->
+<img class="chara" src="char6.jpg" style="display:none" /> <!-- キャラ[6]の画像おき場 -->
+<img class="chara" src="char7.jpg" style="display:none" /> <!-- キャラ[7]の画像おき場 -->
+<img class="leader" src="leader0.png" style="display:none" /> <!-- リーダー[0]の画像おき場 -->
+<img class="leader" src="leader1.png" style="display:none" /> <!-- リーダー[1]の画像おき場 -->
+<img class="subleader" src="subleader0.png" style="display:none" /> <!-- サブリーダー[0]の画像おき場 -->
+<img class="subleader" src="subleader1.png" style="display:none" /> <!-- サブリーダー[1]の画像おき場 -->
+<img class="member" src="member0.png" style="display:none" /> <!-- メンバー[0]の画像おき場 -->
+<img class="member" src="member1.png" style="display:none" /> <!-- メンバー[1]の画像おき場 -->
+<img class="hyouka" src="hyouka0.jpg" style="display:none" /> <!-- 評価[0]の画像おき場 -->
+<img class="hyouka" src="hyouka1.jpg" style="display:none" /> <!-- 評価[1]の画像おき場 -->
+<img class="hyouka" src="hyouka2.jpg" style="display:none" /> <!-- 評価[2]の画像おき場 -->
+<img class="hyouka" src="hyouka3.jpg" style="display:none" /> <!-- 評価[3]の画像おき場 -->
+<img class="hyouka" src="hyouka4.jpg" style="display:none" /> <!-- 評価[4]の画像おき場 -->
+<img class="yakuwarib" src="yakuwarib0.jpg" style="display:none" /> <!-- 役割と倍率[0]の画像おき場 -->
+<img class="yakuwarib" src="yakuwarib1.jpg" style="display:none" /> <!-- 役割と倍率[1]の画像おき場 -->
+<img class="yakuwarib" src="yakuwarib2.jpg" style="display:none" /> <!-- 役割と倍率[2]の画像おき場 -->
+<img class="yakuwarib" src="yakuwarib3.jpg" style="display:none" /> <!-- 役割と倍率[3]の画像おき場 -->
+<img class="uns" src="un0.jpg" style="display:none" /> <!-- うんのつよさ画像[0]の画像おき場 -->
+<img class="uns" src="un1.jpg" style="display:none" /> <!-- うんのつよさ画像[1]の画像おき場 -->
+<img class="uns" src="un2.jpg" style="display:none" /> <!-- うんのつよさ画像[2]の画像おき場 -->
+<img class="unnotuyosa" src="unnotuyosa0.jpg" style="display:none" /> <!-- うんのつよさ説明画像[0]の画像おき場 -->
+<img class="unnotuyosa" src="unnotuyosa1.jpg" style="display:none" /> <!-- うんのつよさ説明画像[1]の画像おき場 -->
+<img class="unnotuyosa" src="unnotuyosa2.jpg" style="display:none" /> <!-- うんのつよさ説明画像[2]の画像おき場 -->
+<img id="takara" src="takara.gif" style="display:none" /> <!-- 宝箱の画像おき場 -->
+</body>
+</html>

@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) //マウスの座標を得る
+    if (mode === 0) { //タイトル画面？
+        premode = 0 //１つ前のモードをとっておく
+        mode = 4 //準備モードにする
+    } else if (mode === 4 && onplayer()) { //準備モードでプレイヤーをクリック？
+        goalmode = 1 //【追加】ゴールを有効にする
+        mode = 5 //プレイモードにする
+    }
+}
+
+//マウスが動いた時にやること
+function onmove_canvas(evt) {
+    if (mode === 5) { //プレイモード？
+        mouse = mousezahyo(canvas, evt) //マウスの座標を得る
+        playerp.x = player.x //現在のプレイヤーの位置xを保存
+        playerp.y = player.y //現在のプレイヤーの位置yを保存
+        playerdousa() //プレイヤーの動き
+        if (hcenter() && vcenter()) { //【以下追加】プレイヤーが上下左右共にますめの真ん中にいれば
+            tuukashori(200, 10) //初めての通過場所ならスコアを200加点して通過済にし、通過済の場所なら10減点する
+            if (goalmode === 1 && map1[player.y][player.x] === 3) { //ゴールなら
+                mode = 9 //クリアモードへ
+            }
+        }
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    draw() //画面をえがく処理を呼ぶ
+}
+
+//迷路などをえがく
+function drawmap() {
+    fillblack(24, 24, 432, 432) //迷路部分を黒くぬりつぶす
+    for (let j = 0; j < 11; j++) { //迷路全行についてくり返す
+         for (let i = 0; i < 11; i++) { //迷路全列についてくり返す
+            if (map1[j][i] === 8) { //内壁ならば
+                ctx.drawImage(wall, i * 48 - 24, j * 48 - 24) //壁を表示
+            } else if (map1[j][i] === 3) { //【以下追加】ゴールならば
+                ctx.drawImage(goal[goalmode], i * 48 - 24, j * 48 - 24) //ゴール[goalmode]を表示
+            } else if (map1[j][i] === 1) { //【以下追加】通過済ならば
+                fillblue48(i, j) //48×48を青くぬりつぶす
+            }
+        }
+    }
+    ctx.drawImage(playerimg, player.x * 48 - 24, player.y * 48 - 24) //プレイヤーを表示
+    drawscore(score) //【追加】スコアボードを表示してその上に白でスコアを6桁でえがく
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトル画面状態なら
+        fillblack(0, 0, 640, 480) //背景を黒くぬりつぶす
+        let xs = (window1.sx - window1.sy) / 2 //開始座標を得る
+        for (let j = 0; j < 5; j++) { //5行についてくり返す
+            for (let i = 0; i < 5; i++) { //5列についてくり返す
+                if (i !== 2) { //2列目でなければ
+                    ctx.drawImage(wall, xs + 96 * i, 96 * j, 96, 96) //かべの画像を表示
+                }
+            }
+        }
+        ctx.drawImage(title, xs + 96, 96) //タイトル画像を表示
+    } else if (mode === 4) { //準備モードならば
+        haikeiwall() //画面全体にかべをえがきミニタイトルを表示する
+        drawmap() //迷路をえがく
+        drawmessage(0) //メッセージを表示
+    } else if (mode === 5) { //プレイモードならば
+        drawmap() //迷路をえがく
+        drawmessage(1) //メッセージを表示
+    } else if (mode === 9) { //【以下追加】クリア状態ならば
+        drawmap() //迷路をえがく
+        if (allclear() === 1) { //完全クリアであれば
+            drawmessage(2) //メッセージを表示
+            drawcenter("CLEAR!", 18, 96) //「CLEAR!」表示
+        } else { //完全クリアではなければ
+            drawmessage(3) //メッセージを表示
+            drawcenter("GOAL!", 48, 96) //「GOAL!」表示
+        }
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="wall" src="wall.png" style="display:none" /> <!-- 壁画像おき場 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="minititle" src="minititle.png" style="display:none" /> <!-- ミニタイトル画像おき場 -->
+<img id="playerimg" src="player.gif" style="display:none" /> <!-- プレイヤー画像おき場 -->
+<img class="goal" src="goal0.png" style="display:none" /> <!-- ゴール画像[0]おき場 -->
+<img class="goal" src="goal1.png" style="display:none" /> <!-- ゴール画像[1]おき場 -->
+<img id="warp" src="warp.png" style="display:none" /> <!-- ワープ画像おき場 -->
+<img class="message" src="message0.png" style="display:none" /> <!-- メッセージ画像[0]おき場 -->
+<img class="message" src="message1.png" style="display:none" /> <!-- メッセージ画像[1]おき場 -->
+<img class="message" src="message2.png" style="display:none" /> <!-- メッセージ画像[2]おき場 -->
+<img class="message" src="message3.png" style="display:none" /> <!-- メッセージ画像[3]おき場 -->
+<img class="message" src="message4.png" style="display:none" /> <!-- メッセージ画像[4]おき場 -->
+<img class="message" src="message5.png" style="display:none" /> <!-- メッセージ画像[5]おき場 -->
+<img class="message" src="message6.png" style="display:none" /> <!-- メッセージ画像[6]おき場 -->
+<img id="scoreboard" src="score.png" style="display:none" /> <!-- スコアボード画像おき場 -->
+<img class="enemy" src="enemy0.gif" style="display:none" /> <!-- 敵画像[0]おき場 -->
+<img class="enemy" src="enemy1.gif" style="display:none" /> <!-- 敵画像[1]おき場 -->
+</body>
+</html>

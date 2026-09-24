@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+
+
+function start() {
+    timerno = setInterval(mainloop, timer) 
+}
+
+
+function keyUp(evt) {
+    if (mode === 0 && evt.keyCode === 13) { 
+        mode = 5 
+    }
+}
+
+
+function keyDown(evt) {
+}
+
+
+function mainloop() {
+    draw() 
+}
+
+
+function drawfield() {
+    drawhaikei() 
+    ctx.drawImage(stage, stagex, 0) 
+    ctx.drawImage(title, 320, 40) 
+}
+
+
+function draw() {
+    if (mode === 0) { 
+        drawhaikei() 
+        ctx.drawImage(titleback, 150, 16, 340, 448)         
+        for (let i = 0; i < 8; i++) { 
+            if (i < 3) { 
+                ctx.drawImage(slimeb[i], 218, 68 * i + 16) 
+            } else if (i < 6) { 
+                ctx.drawImage(slimeb[i], 286, 68 * i + 56) 
+            } else { 
+                ctx.drawImage(slimeb[5], 68 * i - 54, 396) 
+            }
+        }
+    } else if (mode === 5) { 
+        drawfield() 
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> 
+<canvas id="canvas" width="640" height="480" /></canvas> 
+<img id="titleback" src="titleback.png" style="display:none" /> 
+<img id="title" src="title.png" style="display:none" /> 
+<img id="haikei" src="haikei.png" style="display:none" /> 
+<img class="slimeb" src="slimeb0.png" style="display:none" /> 
+<img class="slimeb" src="slimeb1.png" style="display:none" /> 
+<img class="slimeb" src="slimeb2.png" style="display:none" /> 
+<img class="slimeb" src="slimeb3.png" style="display:none" /> 
+<img class="slimeb" src="slimeb4.png" style="display:none" /> 
+<img class="slimeb" src="slimeb5.png" style="display:none" /> 
+<img class="slime" src="slime0.gif" style="display:none" /> 
+<img class="slime" src="slime1.gif" style="display:none" /> 
+<img class="slime" src="slime2.gif" style="display:none" /> 
+<img class="slime" src="slime3.gif" style="display:none" /> 
+<img class="slime" src="slime4.gif" style="display:none" /> 
+<img class="slime" src="slime5.gif" style="display:none" /> 
+<img class="nextimg" src="next1.png" style="display:none" /> 
+<img class="nextimg" src="next2.png" style="display:none" /> 
+<img class="nextimg" src="next3.png" style="display:none" /> 
+<img class="nextimg" src="next4.png" style="display:none" /> 
+<img class="nextimg" src="next5.png" style="display:none" /> 
+<img class="nextimg" src="next6.png" style="display:none" /> 
+<img id="nextbar" src="nextbar.png" style="display:none" /> 
+<img id="stage" src="stage.png" style="display:none" /> 
+<img id="msg" src="msg.png" style="display:none" /> 
+<img id="shine" src="shine.gif" style="display:none" /> 
+<img id="rensaboard" src="rensaboard.png" style="display:none" /> 
+<img id="pointboard" src="pointboard.png" style="display:none" /> 
+<img id="scoreboard" src="scoreboard.png" style="display:none" /> 
+</body>
+</html>

@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+    if (mode === 0 && evt.keyCode === 13) {
+        target[0].e = 1
+        target[0].x = Math.floor(Math.random() * (window1.sx - targeti.x * 2)) + targeti.x
+        boxlist[onbox].e = 1
+        dronemode = 1
+        mode = 5
+    }
+}
+
+function keyDown(evt) {
+    if (mode === 5) {
+        dronexy = movedrone(evt.keyCode, dronexy.x, dronexy.y)
+    }
+}
+
+function mainloop() {
+    if (mode === 5) {
+        haikeiy = haikeirenketsu(haikeiy)
+        for (let i = 0; i < targetnum; i++) {
+            if (target[i].e > 0) {
+                targetmove(i)
+            }
+        }
+        nexttarget()
+        targett = targetspeedup()
+    }
+    draw()
+}
+
+function drawfield() {
+    ctx.drawImage(haikei[1], 0, haikeiy)
+    ctx.drawImage(haikei[1], 0, haikeiy - window1.sy)
+    for (let i = 0; i < targetnum; i++) {
+        if (target[i].e > 0) {
+            drawtarget(i)
+        }
+    }
+    drawdrone(dronexy.x, dronexy.y)
+    if (dronemode === 1) {
+        drawbox(0, dronexy.x, dronexy.y + boxs.y / 2)
+    }
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(haikei[0], 0, 0)
+        for (let j = 0; j < 4; j++) {
+            for (let i = 0; i < 3; i++) {
+                if (i < 2) {
+                    drawbox(i, 556 * i + 42, 60 * j + 42, 1 - j * 0.2)
+                } else {
+                    drawbox(i, 42, -60 * j + 438, 1 - j * 0.2)
+                }
+            }
+        }
+        drawdrone(566, 406)
+    } else if (mode === 5) {
+        drawfield()
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img class="box" src="box0.gif" style="display:none" />
+<img class="box" src="box1.gif" style="display:none" />
+<img class="box" src="box2.gif" style="display:none" />
+<img class="haikei" src="haikei0.png" style="display:none" />
+<img class="haikei" src="haikei1.png" style="display:none" />
+<img id="drone" src="drone.gif" style="display:none" />
+<img id="target0" src="target0.gif" style="display:none" />
+<img class="msg" src="msg0.png" style="display:none" />
+<img class="msg" src="msg1.png" style="display:none" />
+</body>
+</html>

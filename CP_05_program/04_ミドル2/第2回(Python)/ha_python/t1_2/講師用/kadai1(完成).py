@@ -1,0 +1,14 @@
+from kadai1_parts import * #🔰課題用関数を読み込み
+wait_click() #🔰スイッチがクリックされるまで待つ
+
+
+#✅課題1　この下からプログラムを作ります
+
+# 🔰↓のtest()はテスト用の関数です。コメント化を忘れないこと
+#test()
+
+if g.sw_red == 1 :
+    fall_kobito()
+
+if g.sw_blue == 1 :
+    get_chest()

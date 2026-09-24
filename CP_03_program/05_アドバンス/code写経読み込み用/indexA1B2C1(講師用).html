@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+
+
+function start() {
+    timerno = setInterval(mainloop, timer) 
+}
+
+
+function keyUp(evt) {
+    if ((mode === 0 || mode === 9) && evt.keyCode === 13) { 
+        if (mode === 9) { 
+            slimenum = 3 
+            for (let i = 0; i < cols; i++) { 
+                for (let j = 0; j < lines; j++) { 
+                    smap[i][j] = -1 
+                }
+            }
+            slimexy = { x:102, y:-102 } 
+            score = 0 
+            point = 0 
+            erasecounter = 0 
+            rensacounter = -1 
+        }
+        for (let i = 0; i < 6; i++) { 
+            setyokoku(i) 
+        }
+        mode = 5 
+    } else if (mode === 5 && evt.keyCode === 40) { 
+        if (slimexy.y >= 0 && slimexy.y <= slimesize * (lines - 2)) { 
+            let st = getmap(slimexy) 
+            if (smap[st.dx][st.dy + 1] === -1) { 
+                slimexy.y = slimexy.y + slimesize 
+                point = point + 1 
+            }
+        }
+    }
+}
+
+
+function keyDown(evt) {
+    if (mode === 5) { 
+        if (evt.keyCode === 37 && slimexy.x >= slimesize) { 
+            moveleft() 
+        } else if (evt.keyCode === 39 && slimexy.x < slimesize * 5) { 
+            moveright() 
+        } else if (evt.keyCode === 32) { 
+            let temp = slimes[0]  
+            slimes[0] = slimes[1] 
+            slimes[1] = slimes[2] 
+            slimes[2] = temp 
+        }
+    }
+}
+
+
+function mainloop() {
+    if (mode === 5) { 
+        if (canslimefall()) { 
+            let py = slimexy.y 
+            slimexy.y = slimesize / falldiv + slimexy.y 
+            if (py < 0 && slimexy.y >= 0) { 
+                if (score >= 300) { 
+                    slimenum = 6 
+                } else if (score >= 200) { 
+                    slimenum = 5 
+                } else if (score >= 100) { 
+                    slimenum = 4 
+                }
+                setnewyokoku() 
+            }
+        } else { 
+            if (slimexy.y < 0) { 
+                hiscoreupdate(score) 
+                mode = 9 
+                return 
+            }
+            endslimefall() 
+            mode = 6 
+        }
+    } else if (mode === 6) { 
+        narabicheck()     } else if (mode === 7) { 
+        erasecnt = erasecnt - 1 
+        if (erasecnt === 0) { 
+            eraseslime() 
+            mode = 6 
+        }
+    }
+    draw() 
+}
+
+
+function drawfield() {
+    drawhaikei() 
+    ctx.drawImage(stage, stagex, 0) 
+    ctx.drawImage(title, 320, 40) 
+    drawyokoku() 
+    ctx.drawImage(rensaboard, 320, 296) 
+    ctx.drawImage(pointboard, 320, 349) 
+    ctx.drawImage(scoreboard, 320, 402) 
+    drawrensa() 
+    drawpoint() 
+    drawscore() 
+    ctx.drawImage(msg, 473, 296) 
+    if (hiscore[0] > 0) { 
+        drawhiscoretitle() 
+        drawhiscore(1) 
+        if (hiscore[1] > 0) { 
+            drawhiscore(2) 
+            if (hiscore[2] > 0) { 
+                drawhiscore(3) 
+            }
+        }
+    }
+}
+
+
+function draw() {
+    if (mode === 0) { 
+        drawhaikei() 
+        ctx.drawImage(titleback, 150, 16, 340, 448) 
+        for (let i = 0; i < 8; i++) { 
+            if (i < 3) { 
+                ctx.drawImage(slimeb[i], 218, 68 * i + 16) 
+            } else if (i < 6) { 
+                ctx.drawImage(slimeb[i], 286, 68 * i + 56) 
+            } else { 
+                ctx.drawImage(slimeb[5], 68 * i - 54, 396) 
+            }
+        }
+    } else if (mode === 5 || mode === 9) { 
+        drawfield() 
+        drawslimes() 
+        drawstageslime() 
+    } else if (mode === 6) { 
+        drawfield() 
+        drawstageslime() 
+    } else if (mode === 7) { 
+        drawfield() 
+        drawslimebacklight() 
+        drawstageslime() 
+    }
+    if (mode === 9) { 
+        drawgameover() 
+        drawreplay() 
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> 
+<canvas id="canvas" width="640" height="480" /></canvas> 
+<img id="titleback" src="titleback.png" style="display:none" /> 
+<img id="title" src="title.png" style="display:none" /> 
+<img id="haikei" src="haikei.png" style="display:none" /> 
+<img class="slimeb" src="slimeb0.png" style="display:none" /> 
+<img class="slimeb" src="slimeb1.png" style="display:none" /> 
+<img class="slimeb" src="slimeb2.png" style="display:none" /> 
+<img class="slimeb" src="slimeb3.png" style="display:none" /> 
+<img class="slimeb" src="slimeb4.png" style="display:none" /> 
+<img class="slimeb" src="slimeb5.png" style="display:none" /> 
+<img class="slime" src="slime0.gif" style="display:none" /> 
+<img class="slime" src="slime1.gif" style="display:none" /> 
+<img class="slime" src="slime2.gif" style="display:none" /> 
+<img class="slime" src="slime3.gif" style="display:none" /> 
+<img class="slime" src="slime4.gif" style="display:none" /> 
+<img class="slime" src="slime5.gif" style="display:none" /> 
+<img class="nextimg" src="next1.png" style="display:none" /> 
+<img class="nextimg" src="next2.png" style="display:none" /> 
+<img class="nextimg" src="next3.png" style="display:none" /> 
+<img class="nextimg" src="next4.png" style="display:none" /> 
+<img class="nextimg" src="next5.png" style="display:none" /> 
+<img class="nextimg" src="next6.png" style="display:none" /> 
+<img id="nextbar" src="nextbar.png" style="display:none" /> 
+<img id="stage" src="stage.png" style="display:none" /> 
+<img id="msg" src="msg.png" style="display:none" /> 
+<img id="shine" src="shine.gif" style="display:none" /> 
+<img id="rensaboard" src="rensaboard.png" style="display:none" /> 
+<img id="pointboard" src="pointboard.png" style="display:none" /> 
+<img id="scoreboard" src="scoreboard.png" style="display:none" /> 
+</body>
+</html>

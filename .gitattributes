@@ -1,0 +1,4 @@
+# OneDrive のバイト列のまま保存する（改行コードを変換しない）
+* -text
+# 動画は Git LFS
+*.mp4 filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt)
+}
+
+function onmove_canvas(evt) {
+}
+
+function mainloop() {
+    draw()
+}
+
+function drawmap() {
+}
+
+function draw() {
+    for (let i = 0; i < 5; i++) {
+        ctx.drawImage(wall, i * 96, 0, 96, 96)
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="wall" src="wall.png" style="display:none" />
+<img id="title" src="title.png" style="display:none" />
+<img id="minititle" src="minititle.png" style="display:none" />
+<img id="playerimg" src="player.gif" style="display:none" />
+<img class="goal" src="goal0.png" style="display:none" />
+<img class="goal" src="goal1.png" style="display:none" />
+<img id="warp" src="warp.png" style="display:none" />
+<img class="message" src="message0.png" style="display:none" />
+<img class="message" src="message1.png" style="display:none" />
+<img class="message" src="message2.png" style="display:none" />
+<img class="message" src="message3.png" style="display:none" />
+<img class="message" src="message4.png" style="display:none" />
+<img class="message" src="message5.png" style="display:none" />
+<img class="message" src="message6.png" style="display:none" />
+<img id="scoreboard" src="score.png" style="display:none" />
+<img class="enemy" src="enemy0.gif" style="display:none" />
+<img class="enemy" src="enemy1.gif" style="display:none" />
+</body>
+</html>

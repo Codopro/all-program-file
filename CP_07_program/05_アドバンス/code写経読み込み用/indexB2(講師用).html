@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="./parts.js"></script>
+<script type="text/javascript" src="./partsb.js"></script>
+<script type="text/javascript">
+let timer = 20
+let player = { x:300, y:395, sx:40, sy:40, mx:10 }
+let teki = { x:10, y:70, sx:60, sy:60, mx:1, my:10 }
+let tama = { sx:20, sy:20, mx:10 }
+let ufo = { x:0, y:15, sx:60, sy:40, mx:2, wait:150 }
+let ufob = { wait:50 }
+
+let mode = 0
+let tamaf = 0
+let tekinum = 32
+let tekia = []
+let kougeki = 0
+let hidari = 0
+let migi = 0
+let ufof = 0
+let ufow = ufo.wait
+let ufobw = ufob.wait
+
+function keyUp(evt) {
+    if (mode === 0) {
+        if (evt.keyCode === 13) {
+            tekijunbi()
+            mode = 1
+        }
+    } else if (mode === 1) {
+        if (evt.keyCode === 37) {
+            hidari = 0
+        }
+        if (evt.keyCode === 39) {
+            migi = 0
+        }
+        if (evt.keyCode === 32) {
+            kougeki = 0
+        }
+    }
+}
+
+function keyDown(evt) {
+    if (mode === 1) {
+        if (evt.keyCode === 37) {
+            hidari = 1
+        }
+        if (evt.keyCode === 39) {
+            migi = 1
+        }
+        if (evt.keyCode === 32) {
+            kougeki = 1
+        }
+    }
+}
+
+function mainloop() {
+    if (mode === 1) {
+        if (hidari === 1) {
+            hidariidou()
+        }
+        if (migi === 1) {
+            migiidou()
+        }
+        if (kougeki === 1 && tamaf === 0) {
+            tamauchi()
+            tamaf = 1
+        }
+        if (tamaf === 1) {
+            tamaf = hit()
+        }
+        if (tamaf === 1) {
+            tamaf = tamaidou()
+        }
+        if (tekinum > 0) {
+            tekiidou()
+            if (shinryaku() === 1) {
+                mode = 9
+            }
+        }
+        if (tekinum === 0) {
+            tekijunbi()
+        }
+        if (ufof === 0) {
+            if(ufow-- < 0) {
+                ufojunbi()
+                ufof = 1
+            }
+        } else if (ufof == 2) {
+            if(ufobw-- < 0) {
+                ufof = 0
+            }
+        }
+        if (ufof === 1 && tamaf === 1) {
+            ufof = ufohit2()
+            if (ufof === 2) {
+                tamaf = 0
+            }
+        }
+        if (ufof === 1) {
+            ufof = ufoido()
+        }
+    }
+    draw()
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(back1i, 0, 0)
+        ctx.font = '62pt Arial'
+        ctx.fillStyle = 'Orange'
+        ctx.fillText('Vertical Shooting', 10, 100)
+        ctx.font = '26pt Arial'
+        ctx.fillText('Hit Enter key to Start', 170, 450)
+
+        ctx.fillStyle = ctx.createPattern(tekii, 'repeat')
+        for (let i = 0; i < 5; i++) {
+            if (i === 0) {
+                ctx.fillRect(240, 115, 180, 60)
+            } else if (i <= 3) {
+                ctx.fillRect(300, 115 + i * 60, 60, 60)
+            } else {
+                ctx.fillRect(240, 355, 180, 60)
+            }
+        }
+    }
+    if (mode === 1) {
+        ctx.drawImage(back2i, 0, 0)
+        if (tamaf === 1) {
+            ctx.drawImage(tamai, tamax, tamay)
+        }
+        if (ufof === 1) {
+            ctx.drawImage(ufoi, ufox, ufoy)
+        } else if (ufof === 2) {
+            ctx.drawImage(ufobi, ufox, ufoy)
+        }
+    }
+    if (mode === 9) {
+        ctx.drawImage(back1i, 0, 0)
+        ctx.font = '90pt Arial'
+        ctx.fillStyle = 'Red'
+        ctx.fillText('Game Over', 10, 150)
+        ctx.font = '26pt Arial'
+        ctx.fillText('Reload to Re-Start', 190, 450)
+    }
+    if (mode != 0) {
+        ctx.drawImage(playeri, playerx, playery)
+        for (let i = 0; i < 32; i++) {
+            if (tekia[i].f === 1) {
+                ctx.drawImage(tekii, tekia[i].x, tekia[i].y)
+            }
+        }
+    }
+}
+</script>
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="back1i" src="back1.png" style="display:none;" />
+<img id="back2i" src="back2.png" style="display:none;" />
+<img id="playeri" src="player.gif" style="display:none;" />
+<img id="tekii" src="enemy.gif" style="display:none;" />
+<img id="tamai" src="pbomb.gif" style="display:none;" />
+<img id="ufoi" src="ufo.gif" style="display:none;" />
+<img id="ufobi" src="ufob.gif" style="display:none;" />
+</body>
+</html>

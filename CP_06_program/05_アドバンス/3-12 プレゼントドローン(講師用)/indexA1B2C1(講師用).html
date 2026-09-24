@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//C-1：ドローンを３つにして配達失敗すると減るようにしよう
+
+//ゲームの開始の時にやること
+function start() {
+    for (let i = 0; i < 3; i++) { //【A-1:以下追加】各効果音についてくり返す
+        oto[i] = new Audio("oto" + i + ".mp3") //ファイルを開く
+        oto[i].preload = "auto" //音が自動で読み込まれるようにする
+        oto[i].load() //効果音を読み込んでおく
+    }
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+    if (mode === 0 && evt.keyCode === 13) { //タイトルモードでEnterキーがおされたら
+        oto[0].currentTime = 0 //【A-1:追加】効果音の準備
+        oto[0].play() //【A-1:追加】効果音を流す
+        target[0].e = 1 //配達先[0]を表示する
+        target[0].x = Math.floor(Math.random() * (window1.sx - targeti.x * 2)) + targeti.x //配達先[0]の位置を乱数で決める
+        boxlist[onbox].e = 1 //箱[onbox]を表示する
+        dronemode = 1 //ドローンの状態を箱ありにする
+        mode = 5 //プレイモードにする
+    } else if (mode === 5 && dronemode === 1 && evt.keyCode === 32) { //プレイモードでドローンに箱ありでスペースキーがおされたら
+        boxlist[onbox].e = 2 //箱をおろす状態にする
+        boxlist[onbox].x = dronexy.x //箱中央のX座標をドローンに合わせる
+        boxlist[onbox].y = dronexy.y - drones.y / 2 + dropy //箱中央のY座標をドローン前方の狙いの位置にする
+        boxlist[onbox].p = 0 //ポイントをクリアする
+        dronemode = 0 //ドローンに箱なしにする
+    } else if (mode === 5 && dronemode === 0 && evt.keyCode === 13) { //プレイモードでドローンに箱なしでEnterキーがおされたら
+        mode = getnextbox() //次の箱があれば用意してゲームの状態を箱補給モードにする
+    } else if (mode === 9 && evt.keyCode === 27) { //【B-1:以下追加】ゲームオーバーモードでEscキーがおされたら
+        for (let i = 0; i < targetnum; i++) { //配達先の数だけくり返す
+            target[i] = { e:0, x:targeti.x, y:targeti.y, on:0 } //配達先を初期化
+        }
+        for (let i = 0; i < boxnum; i++) { //箱の数だけくり返す
+            boxlist[i] =  { e:0, n:0, x:dronexy.x, y:dronexy.y + boxs.y / 2, s:1, p:0 } //箱のリストを初期化
+        }
+        haikeiy = 0 //はいけい画像[1]のつなぎめのy座標
+        dronexy = { x:dronei.x, y:dronei.y } //ドローンの位置
+        dronemode = 1 //ドローンの状態(0:箱なし, 1:箱あり)
+        onbox = 0 //ドローンに乗っている箱の番号
+        targett = targetti //次の配達先が現れるまでの時間
+        targetnext = targett //次の配達先が現れるまでの残り時間
+        score = 0 //スコア
+        target[0].e = 1 //配達先[0]を表示する
+        target[0].x = Math.floor(Math.random() * (window1.sx - targeti.x * 2)) + targeti.x //配達先[0]の位置を乱数で決める
+        boxlist[onbox].e = 1 //箱[onbox]を表示する
+        dronenum = dronenums //【C-1:追加 ※改造B実行時】ドローンの数を初期値に
+        mode = 5 //プレイモードにする
+    }
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+    if (mode === 5) { //プレイモードならば
+        dronexy = movedrone(evt.keyCode, dronexy.x, dronexy.y) //おされた矢印キーに応じてドローンの位置を上下左右に動かす
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 5 || mode === 6) { //プレイモードか箱補給モードならば
+        haikeiy = haikeirenketsu(haikeiy) //はいけい画像[1]のつなぎ目をスクロールの分だけ下げる
+        for (let i = 0; i < targetnum; i++) { //配達先の数だけくり返す
+            if (target[i].e > 0) { //配達先[i]があれば
+                targetmove(i) //配達先[i]をスクロールに合わせて動かす
+                if (target[i].on === 0 && target[i].y >= window1.sy + targets.y) { //未配達で下端にたっしていたら
+                    oto[1].currentTime = 0 //【A-1:追加】効果音の準備
+                    oto[1].play() //【A-1:追加】効果音を流す
+                    if (dronenum <= 1) { //【C-1:追加】ドローンがもうなければ
+                        hiscoreupdate(score) //【B-2:追加】ハイスコアの更新
+                        mode = 9 //ゲームオーバーモードにする
+                        return //ファンクションを抜ける
+                    } else { //【C-1:以下追加】
+                        dronenum = dronenum - 1 //ドローンの数をカウントダウンする
+                        target[i].e = 0 //配達先[i]を無しにする
+                        break //くり返しを抜ける
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < boxnum; i++) { //箱の数だけくり返す
+            movedropedbox(i) //箱[i]がおろしている状態ならばスクロールに合わせて下へ動かす
+            if (boxlist[i].e === 4) { //箱[i]が地面につくのなら
+                for (let j = 0; j < targetnum; j++) { //配達先の数だけくり返す
+                    boxlist[i].p = getpoint(i, j) //箱が配達先の中央に近いかどうかでポイントを求める
+                    if (boxlist[i].p > 0) { //ポイントがあれば
+                        oto[2].currentTime = 0 //【A-1:追加】効果音の準備
+                        oto[2].play() //【A-1:追加】効果音を流す
+                        score = score + boxlist[i].p //スコアに加算
+                        target[j].on = 1 //配達先[j]に箱があるとする
+                        break //最も内側のくり返しを抜ける
+                    }
+                }
+            }
+            boxdroping(i) //箱[i]がおろしている途中ならば状態を1つ進める
+            removebox(i) //箱[i]がおろしている状態で見えなくなったら消す
+        }
+        targett = targetspeedup() //配達先が少しずつ早く現れるようにする
+        nexttarget() //条件がそろったら次の配達先を出す
+    }
+    if (mode === 6) { //箱補給モードならば
+        mode = dropnextbox() //次の箱をドローンの上に落とす
+    }
+    draw() //画面をえがく
+}
+
+//プレイ画面でモードに共通するものをえがく
+function drawfield() {
+    ctx.drawImage(haikei[1], 0, haikeiy) //はいけい画像[1]を表示
+    ctx.drawImage(haikei[1], 0, haikeiy - window1.sy) //はいけい画像[1]を上にもう１枚表示
+    for (let i = 0; i < targetnum; i++) { //配達先の数だけくり返す
+        if (target[i].e > 0) { //配達先[i]があれば
+            drawtarget(i) //配達先[i]を表示
+        }
+    }
+    for (let i = 0; i < boxnum; i++) { //箱の数だけくり返す
+        if (boxlist[i].e >= 2 && boxlist[i].e <= 5) { //箱[i]をおろしているなら
+            drawbox(boxlist[i].n, boxlist[i].x, boxlist[i].y, 1 - 0.1 * boxlist[i].e) //おろしている箱を表示
+            if (boxlist[i].p > 0) { //箱にポイントがあれば
+                drawpoint(i) //ポイントを表示
+            }
+        }
+    }
+    drawdrone(dronexy.x, dronexy.y) //ドローンを表示
+    if (dronemode === 1) { //ドローンに乗っている箱があれば
+        drawbox(0, dronexy.x, dronexy.y + boxs.y / 2) //ドローンに乗っている箱を表示
+    } else if (mode === 6) { //箱補給モードならば
+        drawbox(0, dronexy.x, dronexy.y + boxs.y / 2, 21 - boxlist[onbox].e) //補給中の箱を表示
+    }
+    ctx.drawImage(msg[dronemode], 125, 8) //メッセージ画像を表示
+    drawscore(score) //スコアを表示
+    drawdronenum(dronenum) //【C-1:追加】残りドローンを表示
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトルモードなら
+        ctx.drawImage(haikei[0], 0, 0) //はいけい画像[0]を表示
+        for (let j = 0; j < 4; j++) { //箱4個分くり返す
+            for (let i = 0; i < 3; i++) { //箱3種類分くり返す
+                if (i < 2) { //箱[0]、箱[1]ならば
+                    drawbox(i, 556 * i + 42, 60 * j + 42, 1 - j * 0.2) //箱画像を位置と大きさを変えながら左上・右上に表示
+                } else { //でなければ（箱[2]ならば）
+                    drawbox(i, 42, -60 * j + 438, 1 - j * 0.2) //箱画像を位置と大きさを変えながら左下に表示
+                }
+            }
+        }
+        drawdrone(566, 406) //ドローンを右下に表示
+    } else if (mode === 5 || mode === 6) { //プレイモードか箱補給モードならば
+        drawfield() //プレイ画面でモードに共通するものをえがく
+    } else if (mode === 9) { //ゲームオーバーモードならば
+        drawgameover() //ゲームオーバーを表示
+        ctx.drawImage(msg[2], 125, 8) //【B-1:追加】メッセージ画像を表示
+        if (hiscore[0] > 0) { //【B-2:以下追加】ハイスコア[0]があれば
+            drawhiscore() //ハイスコアを表示
+        }
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="box" src="box0.gif" style="display:none" /> <!-- 箱画像[0]おき場 -->
+<img class="box" src="box1.gif" style="display:none" /> <!-- 箱画像[1]おき場 -->
+<img class="box" src="box2.gif" style="display:none" /> <!-- 箱画像[2]おき場 -->
+<img class="haikei" src="haikei0.png" style="display:none" /> <!-- はいけい画像[0]おき場 -->
+<img class="haikei" src="haikei1.png" style="display:none" /> <!-- はいけい画像[1]おき場 -->
+<img id="drone" src="drone.gif" style="display:none" /> <!-- ドローン画像おき場 -->
+<img id="target0" src="target0.gif" style="display:none" /> <!-- 配達先画像おき場 -->
+<img class="msg" src="msg0.png" style="display:none" /> <!-- メッセージ画像[0]おき場 -->
+<img class="msg" src="msg1.png" style="display:none" /> <!-- メッセージ画像[1]おき場 -->
+<img class="msg" src="msg2.png" style="display:none" /> <!--【B-1:追加】メッセージ画像[2]おき場 -->
+</body>
+</html>

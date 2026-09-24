@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//C-2.ゼロならまわりを自動オープンしよう
+
+//ゲームの開始の時にやること
+function start() {
+    for (let i = 0; i < 3; i++) { //【A-1:以下追加】各効果音についてくり返す
+        oto[i] = new Audio("oto" + i + ".mp3") //ファイルを開く
+        oto[i].preload = "auto" //音が自動で読み込まれるようにする
+        oto[i].load() //効果音を読み込んでおく
+    }
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) //マウスの座標を得る
+    if (mode === 0) { //タイトルモードならば
+        oto[0].currentTime = 0 //【A-1:追加】効果音の準備
+        oto[0].play() //【A-1:追加】効果音を流す
+        setmap() //マップを用意する
+        setbomb(bombs) //ばくだんをセットする
+        setbombs(bombs) //ばくだん数をセットする
+        mode = 5 //プレイモードにする
+    } else if (mode === 5) { //プレイモードならば
+        let mapxy = getmousemap(mouse) //マップのどこがクリックされたかを得る
+        if (mapxy.x >= 0 && vmap[mapxy.x][mapxy.y] === -2) { //クリックされたのが箱ならば
+            if (isflag(mouse)) { //クリックされたのがフラグボタンならば
+                vmap[mapxy.x][mapxy.y] = 8 //フラグを表示する
+                flags = flags + 1 //フラグ数を増やす
+            } else { //フラグボタンではなければ
+                vmap[mapxy.x][mapxy.y] = map[mapxy.x][mapxy.y] //箱を開いて中を表示する
+                boxs = boxs - 1 //箱数を減らす
+                if (map[mapxy.x][mapxy.y] === 9) { //ばくだんならば
+                    oto[2].currentTime = 0 //【A-1:追加】効果音の準備
+                    oto[2].play() //【A-1:追加】効果音を流す
+                    taneakashi() //【C-1:追加】種明かし
+                    // for (let i = 0; i < cols; i++) { //【C-1:削除】列数の分だけくり返す
+                    //    for (let j = 0; j < cols; j++) { //【C-1:削除】行数の分だけくり返す
+                    //        vmap[i][j] = map[i][j] //【C-1:削除】種明かし
+                    //    } //【C-1:削除】
+                    //} //【C-1:削除】
+                    mode = 9 //ゲームオーバーモードにする
+                } else if (map[mapxy.x][mapxy.y] === 0) { //【C-2:以下追加】0ならば
+                    autoopen(mapxy.x - 1, mapxy.y - 1) //左上を自動オープン
+                    autoopen(mapxy.x    , mapxy.y - 1) //上を自動オープン
+                    autoopen(mapxy.x + 1, mapxy.y - 1) //右上を自動オープン
+                    autoopen(mapxy.x - 1, mapxy.y    ) //左を自動オープン
+                    autoopen(mapxy.x + 1, mapxy.y    ) //右を自動オープン
+                    autoopen(mapxy.x - 1, mapxy.y + 1) //左下を自動オープン
+                    autoopen(mapxy.x    , mapxy.y + 1) //下を自動オープン
+                    autoopen(mapxy.x + 1, mapxy.y + 1) //右下を自動オープン
+                // } else if (bombs === boxs) { //【C-2:削除】ではなくばくだん数と残りの箱数が同じならば
+                } //【C-2:追加】
+                if (mode !== 9 && bombs === boxs) { //【C-2:追加】ゲームオーバーではなくばくだん数と残りの箱数が同じならば
+                    oto[1].currentTime = 0 //【A-1:追加】効果音の準備
+                    oto[1].play() //【A-1:追加】効果音を流す
+                    if (cols === maxcols) { //【B-1:追加】列数が最大列数であれば
+                        mode = 8 //ゲームクリアモードにする
+                    } else { //【B-1:以下追加】
+                        mode = 7 //レベルアップモードにする
+                    }
+                }
+            }
+        } else if (mapxy.x >= 0 && vmap[mapxy.x][mapxy.y] === 8) { //クリックされたのがフラグならば
+            vmap[mapxy.x][mapxy.y] = -2 //箱に戻す
+            flags = flags - 1 //フラグ数を減らす
+        }
+    } else if (mode > 5) { //プレイ後の各モードならば
+        let levelup = false //【B-1:追加】レベルアップフラグ
+        if (mode === 7 && isnext(mouse)) { //【B-1:以下追加】レベルアップモードで「先に進む」ならば
+            if (cols < maxcols) { //列数が最大未満？
+                cols = cols + 1 //パズルの行数＝列数を1増やす
+                bombs = cols - 2 //ばくだん数を再計算
+                boxsize = (window1.sy - fuchi * 2) / cols //箱の大きさを再計算
+                levelup = true //レベルアップ決定
+            }
+        }
+        if (levelup || isagain(mouse)) { //【B-1:変更】レベルアップ決定か「もう１度」ならば
+            setmap() //マップを用意する
+            setbomb(bombs) //ばくだんをセットする
+            setbombs(bombs) //ばくだん数をセットする
+            boxs = cols * cols //箱数＝パズルの行数×パズルの行数
+            flags = 0 //フラグ数を戻す
+            gametimer = cols * 20 //【C-1:追加】ゲームタイマーを再セット
+            mode = 5 //プレイモードにする
+        }
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 5) { //【C-1:以下追加】プレイモードならば
+        gametimer = gametimer - 0.05 //ゲームタイマーをカウントダウン
+        if (gametimer <= 0.0) { //ゲームタイマーがゼロになったら
+            oto[2].currentTime = 0 //効果音の準備
+            oto[2].play() //効果音を流す
+            taneakashi() //種明かし
+            mode = 6 //タイムアップモードにする
+        }
+    }
+    draw() //画面をえがく処理を呼ぶ
+}
+
+//箱・タイトル・ばくだん数・フラグ数をえがく
+function drawitem() {
+    for (let i = 0; i < cols; i++) { //列数の分だけくり返す
+        for (let j = 0; j < cols; j++) { //行数の分だけくり返す
+            drawbox(i, j, vmap[i][j]) //その位置の状態の箱画像を表示
+        }
+    }
+    ctx.drawImage(title, 490, 33, 120, 120) //タイトルを表示
+    ctx.drawImage(bombflag, 490, 180, 120, 120) //ばくだん数とフラグ数の画像を表示
+    drawbombs(bombs) //ばくだん数を表示
+    drawflags(flags) //フラグ数を表示
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトルモードなら
+        for (let i = 0; i < 3; i++) { //横に3回くり返す
+            for (let j = 0; j < 3; j++) { //縦に3回くり返す
+                if (i + j <= 1) { //i,jが(0,0)(1,0)(0,1)ならば
+                    ctx.drawImage(box, 160 * i, 160 * j, 160, 160) //箱画像を表示
+                } else if (i === 1 && j === 1) { //i,jが(1,1)ならば
+                    ctx.drawImage(titlebox, 160 * i, 160 * j, 160, 160) //タイトル箱画像を表示
+                } else { //i,jが(0,2)(1,2)(2,0)(2,1)(2,2)ならば
+                    ctx.drawImage(bomb, 160 * i, 160 * j, 160, 160) //爆弾画像を表示
+                }
+            }
+        }
+    } else if (mode === 5) { //プレイモードならば
+        ctx.drawImage(haikei[0], 0, 0) //はいけい[0]画像を表示
+        drawitem() //箱・タイトル・ばくだん数・フラグ数をえがく
+        ctx.drawImage(msg[0], 490, 325, 120, 120) //メッセージ[0]画像を表示
+        drawtimer(gametimer) //【C-1:追加】タイマーを表示
+    } else if (mode === 7) { //【B-1:以下追加】レベルアップモードならば
+        ctx.drawImage(haikei[2], 0, 0) //はいけいを表示
+        drawitem() //箱・タイトル・ばくだん数・フラグ数をえがく
+        ctx.drawImage(msg[3], 490, 325, 120, 120) //メッセージ[3]画像を表示
+    } else if (mode === 8) { //ゲームクリアモードならば
+        ctx.drawImage(haikei[2], 0, 0) //はいけいを表示
+        drawitem() //箱・タイトル・ばくだん数・フラグ数をえがく
+        ctx.drawImage(msg[2], 490, 325, 120, 120) //メッセージ[2]画像を表示
+    } else if (mode === 6 || mode === 9) { //【C-1:変更】タイムアップかゲームオーバーモードならば
+        ctx.drawImage(haikei[1], 0, 0) //はいけいを表示
+        drawitem() //箱・タイトル・ばくだん数・フラグ数をえがく
+        if (mode === 6) { //【C-1:追加】タイムアップモードならば
+               ctx.drawImage(msg[4], 490, 325, 120, 120) //【C-1:追加】メッセージ[1]画像を表示
+        } else { //【C-1:追加】ゲームオーバーモードならば
+               ctx.drawImage(msg[1], 490, 325, 120, 120) //メッセージ[1]画像を表示
+        } //【C-1:追加】
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="titlebox" src="titlebox.png" style="display:none" /> <!-- タイトル箱画像おき場 -->
+<img id="box" src="fbox.png" style="display:none" /> <!-- 箱画像おき場 -->
+<img class="haikei" src="haikei0.png" style="display:none" /> <!-- はいけい画像[0]おき場 -->
+<img class="haikei" src="haikei1.png" style="display:none" /> <!-- はいけい画像[1]おき場 -->
+<img class="haikei" src="haikei2.png" style="display:none" /> <!-- はいけい画像[2]おき場 -->
+<img class="num" src="num0.png" style="display:none" /> <!-- 数字画像[0]おき場 -->
+<img class="num" src="num1.png" style="display:none" /> <!-- 数字画像[1]おき場 -->
+<img class="num" src="num2.png" style="display:none" /> <!-- 数字画像[2]おき場 -->
+<img class="num" src="num3.png" style="display:none" /> <!-- 数字画像[3]おき場 -->
+<img class="num" src="num4.png" style="display:none" /> <!-- 数字画像[4]おき場 -->
+<img class="num" src="num5.png" style="display:none" /> <!-- 数字画像[5]おき場 -->
+<img class="num" src="num6.png" style="display:none" /> <!-- 数字画像[6]おき場 -->
+<img class="num" src="num7.png" style="display:none" /> <!-- 数字画像[7]おき場 -->
+<img id="empty" src="empty.png" style="display:none" /> <!-- 空箱画像おき場 -->
+<img class="msg" src="msg0.png" style="display:none" /> <!-- メッセージ画像[0]おき場 -->
+<img class="msg" src="msg1.png" style="display:none" /> <!-- メッセージ画像[1]おき場 -->
+<img class="msg" src="msg2.png" style="display:none" /> <!-- メッセージ画像[2]おき場 -->
+<img class="msg" src="msg3.png" style="display:none" /> <!-- メッセージ画像[3]おき場 -->
+<img class="msg" src="msg4.png" style="display:none" /> <!--【C-1:追加】メッセージ画像[4]おき場 -->
+<img id="bomb" src="bomb.png" style="display:none" /> <!-- ばくだん画像おき場 -->
+<img id="bombflag" src="bombflag.png" style="display:none" /> <!-- ばくだん数とフラグ数の画像おき場 -->
+<img id="flag" src="flag.png" style="display:none" /> <!-- フラグ画像おき場 -->
+</body>
+</html>

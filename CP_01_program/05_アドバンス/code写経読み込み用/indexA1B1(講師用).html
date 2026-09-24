@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//【B-1.イベントに応じた音を鳴らそう】
+
+function start() {
+    for (let i = 0; i < 5; i++) { 
+        oto[i] = new Audio("oto" + i + ".mp3") 
+        oto[i].preload = "auto" 
+        oto[i].load() 
+    }
+    timerno = setInterval(mainloop, timer) 
+}
+
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) 
+    if (mode === 0) { 
+        if (onstart(mouse.x, mouse.y)) { 
+            oto[0].currentTime = 0 
+            oto[0].play() 
+            mode = 5 
+        }
+    }
+}
+
+function onmove_canvas(evt) {
+    if (mode === 5) { //
+        mouse = mousezahyo(canvas, evt) 
+        hamsize = hammersize(mouse.y) 
+        hammerx = mouse.x - hamsize / 2 
+        hammery = mouse.y - hamsize / 2 
+    }
+}
+
+function ondown_canvas(evt) {
+    if (mode === 5) { //
+        hammers = 1 
+        if (itachis[itachino] === 1 && hammeritachi(itachino)) { 
+            itachis[itachino] = 4 
+            score = score + getpoint(itachino) 
+            itachicount = itachicounti / 2 
+        }
+        if (score >= 20 && bonustime > 0) { 
+            oto[1].currentTime = 0             
+            oto[1].play()             
+            gametimer = gametimer + bonustime 
+            bonustime = 0 
+        }
+    }
+}
+
+function onup_canvas(evt) {
+    if (mode === 5) { //
+        hammers = 0 
+    }
+}
+
+function mainloop() {
+    if (mode === 5) { //
+        gametimer = gametimer - 0.05 
+        if (gametimer <= 0.0) { 
+            oto[2].currentTime = 0 
+            oto[2].play() 
+            mode = 9 
+            return 
+        }
+        if (itachiwait > 0) { 
+            itachiwait-- 
+        } else { 
+            if (itachicount <= 0) { 
+                itachicount = itachicounti 
+                itachino = getitachino() 
+                itachis[itachino] = 1 
+            } else { 
+                itachicount-- 
+                if (itachicount <= 0) { 
+                    itachis[itachino] = 0 
+                    itachiwait = getitachiwait() 
+                }
+            }
+        }
+    }
+    draw() 
+}
+
+function drawitem() {
+    ctx.drawImage(play, 0, 0) 
+    drawtimer(gametimer) 
+    ctx.font = '36pt Arial' 
+    ctx.fillStyle = 'white' 
+    ctx.fillText("SCORE:" + ("0000" + score).slice(-4), 168, 120) 
+}
+
+function draw() {
+    if (mode === 0) { 
+        ctx.drawImage(title, 0, 0) 
+        for (let i = 3; i <= 8; i++) { 
+            if (i !== 7) { 
+                drawitachi(i) 
+            } else { 
+                drawitachig(i) 
+            }
+        }
+    } else if (mode === 5) { //
+        drawitem() 
+        if (itachis[itachino] > 0) { 
+            drawitachi(itachino) 
+            if (itachis[itachino] === 4) { 
+                drawatari(itachino) 
+            }
+        }
+        ctx.drawImage(hammer[hammers], hammerx, hammery, hamsize, hamsize) 
+    } else if (mode === 9) { 
+        drawitem() 
+        ctx.drawImage(timeup, 60, 180) 
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> 
+<canvas id="canvas" width="640" height="480" /></canvas> 
+<img id="title" src="title.png" style="display:none" /> 
+<img id="play" src="play.png" style="display:none" /> 
+<img class="hammer" src="hammer0.gif" style="display:none" /> 
+<img class="hammer" src="hammer1.gif" style="display:none" /> 
+<img id="itachi" src="itachi.gif" style="display:none" /> 
+<img id="itachig" src="itachig.gif" style="display:none" /> 
+<img id="atari" src="atari.gif" style="display:none" /> 
+<img id="timeup" src="timeup.gif" style="display:none" /> 
+</body>
+</html>

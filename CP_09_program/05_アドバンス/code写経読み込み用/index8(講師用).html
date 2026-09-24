@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timer = timerv
+    robotno = 1
+    robotd.x = 40
+    robotd.y = 210
+    timerno = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+    if (mode === 0) {
+        if (evt.keyCode === 13) {
+            mode = 1
+        }
+    } else if (mode === 1) {
+        if (evt.keyCode === 38) {
+            keyue = 0
+        }
+        if (evt.keyCode === 40) {
+            keyshita = 0
+        }
+    }
+}
+
+function keyDown(evt) {
+    if (mode === 1) {
+        if (evt.keyCode === 38) {
+            keyue = 1
+        }
+        if (evt.keyCode === 40) {
+            keyshita = 1
+        }
+    }
+}
+
+function mainloop() {
+    if (mode === 1) {
+        counter++
+        haikeikaisi = counter * -ugokihaba
+        if (counter > 511) {
+            mode = 9
+        } else {
+            if (keyue === 1) {
+                robotd.y -= robots.move
+                if (robotd.y < 0) {
+                    robotd.y = 0
+                }
+            }
+            if (keyshita === 1) {
+                robotd.y += robots.move
+                if (robotd.y + robots.sy > window1.sy) {
+                    robotd.y = window1.sy - robots.sy
+                }
+            }
+        }
+    }
+    draw()
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(base, 0, 0)
+        ctx.font = '72pt Arial'
+        ctx.fillStyle = 'Orange'
+        ctx.fillText('Robo Runner', 30, 150)
+        ctx.font = '26pt Arial'
+        ctx.fillText('Hit Enter key to Start', 170, 450)
+        for (let j = 0; j < 5; j++) {
+            for (let i = 0; i < 5; i++) {
+                if (i !== j) {
+                    ctx.drawImage(hazard, i * 40 + 220, j * 40 + 220)
+                }
+            }
+        }
+    } else if (mode === 1) {
+        ctx.drawImage(base, haikeikaisi, 0)
+        ctx.drawImage(robot[robotno], robotd.x, robotd.y)
+    } else if (mode === 9) {
+        ctx.drawImage(base, haikeikaisi, 0)
+        ctx.drawImage(robot[robotno], robotd.x, robotd.y)
+        clearInterval(timerno)
+    }
+}
+</script>
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="base" src="base.png" style="display:none" />
+<img class="robot" src="robot0.gif" style="display:none" />
+<img class="robot" src="robot1.gif" style="display:none" />
+<img class="robot" src="robot2.gif" style="display:none" />
+<img id="hazard" src="hazard.png" style="display:none" />
+<img id="bonusitem" src="bonusitem.gif" style="display:none" />
+<img id="bonusget" src="bonusget.gif" style="display:none" />
+<img id="speedup" src="speedup.gif" style="display:none" />
+<img id="itemget" src="itemget.gif" style="display:none" />
+</body>
+</html>

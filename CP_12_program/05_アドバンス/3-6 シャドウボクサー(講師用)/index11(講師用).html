@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+    if (mode === 0 && evt.keyCode === 32) { //タイトル画面モードでスペースキーが押されていたら
+        mode = 4 //カウントダウンモードにする
+    } else if (mode === 5) { //プレイモードならば
+        if (evt.keyCode === 38) { //↑キーならば
+            playernow = 0 //プレイヤーの状態を上構えにする
+            playerpun = -1 //パンチマークを消す
+        } else if (evt.keyCode === 40) { //↓キーならば
+            playernow = 1 //プレイヤーの状態を下構えにする
+            playerpun = -1 //パンチマークを消す
+        } else if (evt.keyCode === 37 && playernow === 0) { //上構えで←キーならば
+            playernow = 2 //プレイヤーの状態を上パンチにする
+            if (shadownow === 0) { //敵が上構えならば
+                playerpun = 0 //パンチマークをセット
+                shadowdameged(playerpun) //敵にパンチがあたった時にやること
+            } else {
+                playerpun = -1 //パンチマークを消す
+            }
+        } else if (evt.keyCode === 37 && playernow === 1) { //下構えで←キーならば
+            playernow = 3 //プレイヤーの状態を下パンチにする
+            if (shadownow === 1) { //敵が下構えならば
+                playerpun = 0 //パンチマークをセット
+                shadowdameged(playerpun) //敵にパンチがあたった時にやること
+            } else {
+                playerpun = -1 //パンチマークを消す
+            }
+        } else if (evt.keyCode === 39 && playernow === 2) { //上パンチで→キーならば
+            playernow = 0 //プレイヤーの状態を上構えにもどす
+            playerpun = -1 //パンチマークを消す
+        } else if (evt.keyCode === 39 && playernow === 3) { //下パンチで→キーならば
+            playernow = 1 //プレイヤーの状態を下構えにもどす
+            playerpun = -1 //パンチマークを消す
+        } 
+    } 
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 4) { //カウントダウンモードならば
+        count = count - 0.05 //カウントダウンする
+        if (count <= 0.0) { //カウントダウン終了？
+            mode = 5 //プレイモードにする
+        }
+    } else if (mode === 5) { //プレイモードならば
+        shadowcnt = shadowcnt - 1 //敵の動作カウントダウン
+        if (shadowcnt <= 0) { //カウントダウン終了？
+            shadowcnt = shadowcnti //敵の動作カウントを戻す
+            if (shadownow === 0 && playernow === 0) { //敵もプレイヤーも上かまえなら
+                shadownow = 2 //敵の状態を上パンチにする
+                shadowpun = 0 //【追加】パンチマークをセット
+                playerdameged(shadowpun) //【追加】プレイヤーにパンチがあたった時にやること
+            } else if (shadownow === 1 && playernow === 1) { //敵もプレイヤーも下かまえなら
+                shadownow = 3 //敵の状態を下パンチにする
+                shadowpun = 0 //【追加】パンチマークをセット
+                playerdameged(shadowpun) //【追加】プレイヤーにパンチがあたった時にやること
+            } else if (Math.random() < 0.5) { //50%の確率で
+                shadownow = 0 //敵の状態を上かまえにする
+                shadowpun = -1 //【追加】パンチマークを消す
+            } else {
+                shadownow = 1 //敵の状態を下かまえにする
+                shadowpun = -1 //【追加】パンチマークを消す
+            }
+        }
+    }
+    draw() //画面をえがく
+}
+
+//試合をえがく
+function drawact() {
+    ctx.drawImage(haikei, 0, 0) //背景画像を表示
+    drawshadow(shadowno, shadownow) //敵画像を表示
+    drawplayer(playernow) //プレイヤー画像を表示
+    if (mode >= 5) { //プレイモード以降ならば
+        drawplayerg(playerpow) //プレイヤーのパワーメーターを表示
+        drawshadowg(shadowpow) //敵のパワーメーターを表示
+        if (playerpun >= 0) { //プレイヤーのパンチが当たっているなら
+            drawshadowpun(playerpun) //敵にパンチマークを表示
+        }
+        if (shadowpun >= 0) { //【以下追加】敵のパンチが当たっているなら
+            drawplayerpun(shadowpun) //プレイヤーにパンチマークを表示
+        }
+    }
+    drawname(shadowno) //プレイヤーと敵の名前を表示
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトルモードならば
+        ctx.drawImage(title, 0, 0) //タイトル画像を表示
+        for (let i = 0; i < 6; i++) {
+            if(i < 3) {
+                ctx.drawImage(fireimg, 60 + 40 * i, 275) //左の炎画像を表示
+            } else {
+                ctx.drawImage(fireimg, 345 + 40 * i, 275) //右の炎画像を表示
+            }
+        }    
+    } else if (mode === 4) { //カウントダウンモードならば
+        drawact() //試合をえがく
+        drawcount(count) //カウントをえがく
+    } else if (mode === 5) { //プレイモードならば
+        drawact() //試合をえがく
+    } else if (mode === 8) { //KO勝ちモードならば
+        drawact() //試合をえがく
+        drawmessage("KO!!") //KO勝ちのメッセージを表示
+    } else if (mode === 9) { //【以下追加】KO負けモードならば
+        drawact() //試合をえがく
+        drawmessage("KO...") //KO負けのメッセージを表示
+        ctx.fillText("Game Over", 170, 470) //「Game Over」を表示
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="haikei" src="haikei.png" style="display:none" /> <!-- はいけい画像おき場 -->
+<img class="playerimg" src="player0.gif" style="display:none" /> <!-- プレイヤー画像[0]おき場 -->
+<img class="playerimg" src="player1.gif" style="display:none" /> <!-- プレイヤー画像[1]おき場 -->
+<img class="playerimg" src="player2.gif" style="display:none" /> <!-- プレイヤー画像[2]おき場 -->
+<img class="playerimg" src="player3.gif" style="display:none" /> <!-- プレイヤー画像[3]おき場 -->
+<img class="aokage" src="aokage0.gif" style="display:none" /> <!-- 敵（青影）画像[0]おき場 -->
+<img class="aokage" src="aokage1.gif" style="display:none" /> <!-- 敵（青影）画像[1]おき場 -->
+<img class="aokage" src="aokage2.gif" style="display:none" /> <!-- 敵（青影）画像[2]おき場 -->
+<img class="aokage" src="aokage3.gif" style="display:none" /> <!-- 敵（青影）画像[3]おき場 -->
+<img class="shirokage" src="shirokage0.gif" style="display:none" /> <!-- 敵（白影）画像[0]おき場 -->
+<img class="shirokage" src="shirokage1.gif" style="display:none" /> <!-- 敵（白影）画像[1]おき場 -->
+<img class="shirokage" src="shirokage2.gif" style="display:none" /> <!-- 敵（白影）画像[2]おき場 -->
+<img class="shirokage" src="shirokage3.gif" style="display:none" /> <!-- 敵（白影）画像[3]おき場 -->
+<img class="akakage" src="akakage0.gif" style="display:none" /> <!-- 敵（赤影）画像[0]おき場 -->
+<img class="akakage" src="akakage1.gif" style="display:none" /> <!-- 敵（赤影）画像[1]おき場 -->
+<img class="akakage" src="akakage2.gif" style="display:none" /> <!-- 敵（赤影）画像[2]おき場 -->
+<img class="akakage" src="akakage3.gif" style="display:none" /> <!-- 敵（赤影）画像[3]おき場 -->
+<img id="fireimg" src="fire.gif" style="display:none" /> <!-- 炎画像おき場 -->
+<img id="punch" src="punch.gif" style="display:none" /> <!-- パンチ画像おき場 -->
+</body>
+</html>

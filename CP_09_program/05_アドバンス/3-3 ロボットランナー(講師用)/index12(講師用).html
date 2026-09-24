@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+
+//ゲームの開始の時にやること
+function start() {
+    timer = timerv //ゲームの実行タイマー
+    robotno = 1 //ロボット番号（0：スロー 1:ノーマル 2:ハイスピード）
+    robotd.x = 40 //ロボットのX座標
+    robotd.y = 210 //ロボットのY座標
+    oldtimer = timer //変更前のタイマー
+    for (let i = 1; i < 8; i++) { //1～7面についてくり返す
+        for (let j = 0; j < 16; j++) { //各列についてくり返す
+            for (let k = 0; k < 12; k++) { //各行についてくり返す
+                maps[i * 16 + j][k] = map1[j][k] //マップを面のマップにコピー
+            }
+        }
+    }
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+    if (mode === 0) { //タイトル画面？
+        if (evt.keyCode === 13) { //Enterキー？
+            mode = 1 //プレイ画面へ
+        }
+    } else if (mode === 1) { //プレイ画面？
+        if (evt.keyCode === 38) { //↑キー？
+            keyue = 0 //上キーが離された
+        }
+        if (evt.keyCode === 40) { //↓キー？
+            keyshita = 0 //下キーが離された
+        }
+    }
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+    if (mode === 1) { //プレイ画面？
+        if (evt.keyCode === 38) { //↑キー？
+            keyue = 1 //上キーが押された
+        }
+        if (evt.keyCode === 40) { //↓キー？
+            keyshita = 1 //下キーが押された
+        }
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 1) { //プレイ画面？
+        counter++ //カウントアップ
+        haikeikaisi = counter * -ugokihaba //背景の表示開始位置をかえる
+        if (counter > 511) { //カウンタ終了？
+            mode = 9 //ゴール画面へ
+        } else {
+            if (-haikeikaisi > window1.sx && -haikeikaisi < window1.sx * 8) { //1～7面ならば
+                itemxy() //ロボットの高さと幅で触れるアイテムの位置を得る
+                bonusscore(10) //ボーナスアイテムに触れたら10点
+                speedupscore(50, 10) //【変更】スピードアップに触れたら50点、スピード10％アップ
+            }
+            if (keyue === 1) { //↑キーが押されている？
+                robotd.y -= robots.move //ロボットのY座標を減らす
+                if (robotd.y < 0) { //上にはみ出した？
+                    robotd.y = 0  //はみ出さない高さにする
+                }
+            }
+            if (keyshita === 1) { //↓キーが押されている？
+                robotd.y += robots.move //ロボットのY座標を増やす
+                if (robotd.y + robots.sy > window1.sy) { //下にはみ出した？
+                    robotd.y = window1.sy - robots.sy //はみ出さない高さにする
+                }
+            }
+            if (timer !== oldtimer) { //スピード変更？
+                clearInterval(timerno) //タイマーを止める
+                timerno = setInterval(mainloop, timer) //タイマーを再起動する
+                oldtimer = timer //スピードを更新
+            }
+        }
+    }
+    draw() //画面をえがく
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトル画面？
+        ctx.drawImage(base, 0, 0) //背景画像を表示
+        ctx.font = '72pt Arial' //文字サイズを指定
+        ctx.fillStyle = 'Orange' //文字をオレンジ色に
+        ctx.fillText('Robo Runner', 30, 150) //文字列を表示
+        ctx.font = '26pt Arial' //文字サイズを指定
+        ctx.fillText('Hit Enter key to Start', 170, 450) //文字列を表示
+        for (let j = 0; j < 5; j++) { //j=0,1,2,3,4についてくり返す
+            for (let i = 0; i < 5; i++) { //i=0,1,2,3,4についてくり返す
+                if (i !== j) { //斜めの対角線上でなければ
+                    ctx.drawImage(hazard, i * 40 + 220, j * 40 + 220) //障害物画像でロゴマークを表示
+                }
+            }
+        }
+    } else if (mode === 1) { //プレイ画面？
+        ctx.drawImage(base, haikeikaisi, 0) //背景画像を表示
+        drawbonus() //ボーナスアイテム画像を表示
+        drawbonusget() //ボーナスゲット画像を表示
+        drawspeedup() //スピードアップ画像を表示
+        drawspeedupget() //アイテムゲット画像を表示
+        if(timer < timerv - 1) { //高速移動中？
+            robotno = 2 //ロボット画像を高速型に
+        } else { //通常スピード？
+            robotno = 1 //ロボット画像を通常型に
+        }
+        ctx.drawImage(robot[robotno], robotd.x, robotd.y) //ロボット画像を表示
+    } else if (mode === 9) { //ゴール画面？
+        ctx.drawImage(base, haikeikaisi, 0) //背景画像を表示
+        ctx.drawImage(robot[robotno], robotd.x, robotd.y) //ロボット画像を表示
+        ctx.font = '72pt Arial' //文字サイズを指定
+        ctx.fillStyle = 'Red' //文字を赤色に
+        ctx.fillText('GOAL !', 130, 150) //文字列を表示
+        ctx.font = '30pt Arial' //文字サイズを指定
+        ctx.drawImage(bonusitem, 200, 220, 30, 30) //ボーナスアイテム画像を表示
+        ctx.fillText(' = ' + score, 265, 250) //スコア文字列を表示
+        ctx.drawImage(speedup, 200, 260, 30, 30) //【追加】スピードアップ画像を表示
+        ctx.fillText(' = ' + itemscore, 265, 290) //【追加】アイテムスコア文字列を表示
+        ctx.fillText('Total  Score = ' + (score + itemscore), 130, 350) //【追加】トータルスコア文字列を表示
+        clearInterval(timerno) //タイマーを止める
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="base" src="base.png" style="display:none" /> <!-- 背景の画像おき場 -->
+<img class="robot" src="robot0.gif" style="display:none" /> <!-- ロボット[0]の画像おき場 -->
+<img class="robot" src="robot1.gif" style="display:none" /> <!-- ロボット[1]の画像おき場 -->
+<img class="robot" src="robot2.gif" style="display:none" /> <!-- ロボット[2]の画像おき場 -->
+<img id="hazard" src="hazard.png" style="display:none" /> <!-- 障害物の画像おき場 -->
+<img id="bonusitem" src="bonusitem.gif" style="display:none" /> <!-- ボーナスアイテムの画像おき場 -->
+<img id="bonusget" src="bonusget.gif" style="display:none" /> <!-- ボーナスゲットの画像おき場 -->
+<img id="speedup" src="speedup.gif" style="display:none" /> <!-- スピードアップの画像おき場 -->
+<img id="itemget" src="itemget.gif" style="display:none" /> <!-- アイテムゲットの画像おき場 -->
+</body>
+</html>

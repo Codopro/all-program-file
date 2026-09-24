@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript">
+let back = document.getElementsByClassName("back") ;
+let kujibako = document.getElementsByClassName("kujibako") ;
+let kuji = document.getElementsByClassName("kuji") ;
+
+let window1 = { sx:640, sy:480 }
+let timer = 20
+let kujino = 7
+let slotno = 3
+let timers
+let kujis = [
+    "omikuji_daikichi",
+    "omikuji_chuukichi",
+    "omikuji_syoukichi",
+    "omikuji_kichi",
+    "omikuji_suekichi",
+    "omikuji_kyou",
+    "omikuji_daikyou",
+]
+let sounds = []
+let tsugi = [1, 2, 3, 4, 5, 6, 0]
+
+let imakuji = [0, 1, 2, 3, 4, 5, 6]
+let mode = 0
+let kekkas = [0, 0, 0]
+let kujihyojis = [0, 0, 0]
+let kujitime = 0
+let kujibakohyoji = 0
+let kujiy = 0
+let heikin = 0
+
+function init() {
+    ctx = document.getElementById('canvas').getContext('2d')
+    addEventListener('keydown', keyDown, true)
+    addEventListener('keyup', keyUp, true)
+    for (let i = 0; i < kujino; i++) {
+        sounds[i] = new Audio(kujis[i] + ".mp3")
+        sounds[i].preload = "auto"
+        sounds[i].load()
+    }
+    start()
+}
+
+function start() {
+    for (let i = 0; i < 10; i++) {
+        let kuji1 = Math.floor(Math.random() * 6) + 1
+        let kuji2 = Math.floor(Math.random() * 6) + 1
+        if (kuji1 !== kuji2) {
+            let taihi = imakuji[kuji1]
+            imakuji[kuji1] = imakuji[kuji2]
+            imakuji[kuji2] = taihi
+        }
+    }
+    timers = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+    if (mode === 0) {
+        if (evt.keyCode === 13) {
+            for(let i = 0; i < slotno; i++) {
+                kekkas[i] = Math.floor(Math.random() * kujino)
+                kujihyojis[i] = tsugi[kekkas[i]]
+            }
+            kujitime = 10
+            mode = 8
+        }
+    }
+    if (mode === 1) {
+        if (evt.keyCode === 32) {
+            for(let i = 0; i < slotno; i++) {
+                kekkas[i] = tsugi[kujihyojis[i]]
+            }
+            kujitime = 10
+            mode = 3
+        }
+    }
+}
+
+function keyDown(evt) {
+}
+
+function mainloop() {
+    if (mode === 8) {
+        kujitime--
+        if (kujitime <= 0) {
+            kujibakohyoji++
+            kujitime = 10
+        }
+        if (kujibakohyoji > 3) {
+            kujitime = 10
+            mode = 1
+        }
+    }
+    if (mode === 1) {
+        kujitime--
+        if (kujitime <= 0) {
+            kujiy++
+            kujitime = 3
+        }
+        if(kujiy >= 5) {
+            kujiy = 0
+            for(let i = 0; i < slotno; i++) {
+                kujihyojis[i] = tsugi[kujihyojis[i]]
+            }
+        }
+    }
+    if (mode === 3) {
+        kujitime--
+        if (kujitime <= 0) {
+            kujiy++
+            kujitime = 5
+        }
+        if(kujiy >= 5) {
+            mode = 7
+        }
+    }
+    if (mode === 7) {
+        let gokei = 0
+        for(let i = 0; i < slotno; i++) {
+            gokei += imakuji[kekkas[i]]
+        }
+        heikin = Math.floor(gokei / slotno)
+        let konkai = heikin
+        sounds[konkai].currentTime = 0
+        sounds[konkai].play()
+        mode = 9
+    }
+    draw()
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(back[0], 0, 0)
+        ctx.drawImage(kujibako[0], 0, 0)
+        for (let i = 1; i <= 6; i++) {
+            let konkai = imakuji[i]
+            if (i <= 3) {
+                ctx.drawImage(kuji[konkai], 210, 6 + i * 110, 50, 110)
+            } else {
+                ctx.drawImage(kuji[konkai], 365, 6 + (i - 3) * 110, 50, 110)
+            }
+        }
+    } else if (mode === 8) {
+        ctx.drawImage(back[0], 0, 0)
+        ctx.drawImage(kujibako[kujibakohyoji], 0, 0)
+    } else if (mode === 1 || mode === 3) {
+        ctx.drawImage(spacer, 115, 116, 110, 230)
+        ctx.drawImage(spacer, 225, 116, 110, 230)
+        ctx.drawImage(spacer, 335, 116, 110, 230)
+        let konkai = imakuji[kujihyojis[0]]
+        ctx.drawImage(kuji[konkai], 115, 116 - kujiy * 46, 110, 230)
+        let konotugi = imakuji[tsugi[kujihyojis[0]]]
+        ctx.drawImage(kuji[konotugi], 115, 346 - kujiy * 46, 110, 230)
+        konkai = imakuji[kujihyojis[1]]
+        ctx.drawImage(kuji[konkai], 225, 116 + kujiy * 46, 110, 230)
+        konotugi = imakuji[tsugi[kujihyojis[1]]]
+        ctx.drawImage(kuji[konotugi], 225, -114 + kujiy * 46, 110, 230)
+        konkai = imakuji[kujihyojis[2]]
+        ctx.drawImage(kuji[konkai], 335, 116 - kujiy * 46, 110, 230)
+        konotugi = imakuji[tsugi[kujihyojis[2]]]
+        ctx.drawImage(kuji[konotugi], 335, 346 - kujiy * 46, 110, 230)
+        ctx.drawImage(back[1], 0, 0)
+    } else if (mode === 9) {
+        if(heikin === 0) {
+            ctx.drawImage(back[2], 0, 0)
+        } else {
+            ctx.drawImage(back[0], 0, 0)
+        }
+        ctx.drawImage(kujibako3slot, 0, 0)
+        let konkai = imakuji[kekkas[0]]
+        ctx.drawImage(kuji[konkai], 115, 116, 110, 230)
+        konkai = imakuji[kekkas[1]]
+        ctx.drawImage(kuji[konkai], 225, 116, 110, 230)
+        konkai = imakuji[kekkas[2]]
+        ctx.drawImage(kuji[konkai], 335, 116, 110, 230)
+    }
+}
+
+</script>
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img class="back" src="back.png" style="display:none;" />
+<img class="back" src="back3.gif" style="display:none;" />
+<img class="back" src="backdaikichi.png" style="display:none" />
+<img class="kujibako" src="kujibako0.gif" style="display:none;" />
+<img class="kujibako" src="kujibako1.gif" style="display:none;" />
+<img class="kujibako" src="kujibako2.gif" style="display:none;" />
+<img class="kujibako" src="kujibako3.gif" style="display:none;" />
+<img id="kujibako3slot" src="kujibako4.gif" style="display:none;" />
+<img class="kuji" src="omikuji_daikichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_chuukichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_syoukichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_kichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_suekichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_kyou.png" style="display:none;" />
+<img class="kuji" src="omikuji_daikyou.png" style="display:none;" />
+<img id="spacer" src="spacer.png" style="display:none;" />
+</body>
+</html>

@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt)
+    if (mode === 0 && mouse.x >= 224 && mouse.x <= 416 && mouse.y >= 144 && mouse.y <= 336) {
+        catxy = { x:mouse.x, y:mouse.y }
+        mode = 5
+    } else if (mode === 5 && inaction === 0) {
+        starxy = { x:catxy.x, y:catxy.y }
+        stardist = getstardist(starxy.x, starxy.y)
+        ropestep = stardist / ropelen
+        ropev = getropelen(ropestep)
+        ropecount = 0
+        inaction = 1
+    }
+}
+
+function onmove_canvas(evt) {
+    if (mode === 5) {
+        mouse = mousezahyo(canvas, evt)
+        catxy = { x:mouse.x, y:mouse.y }
+    }
+}
+
+function mainloop() {
+    if (mode === 5) {
+        if (canxy.x === -1) {
+            canxy.x = setcandy()
+        } else {
+            canxy.y = canxy.y + candyspeed
+            if (canxy.y > window1.sy + candys.y) {
+                canxy = { x:-1, y:0 }
+            }
+        }
+        if (inaction === 1) {
+            if (ropecount < ropestep) {
+                ropeto = getropeto(ropecount)
+                ropecount = ropecount + 1
+            } else {
+                ropeto = { x:starxy.x, y:starxy.y }
+                netcount = 0
+                inaction = 2
+            }
+        } else if (inaction === 2) {
+            netcount = netcount + 1
+            if (netcount >= netcounts) {
+                inaction = 3
+            }
+        } else if (inaction === 3) {
+            netcount = netcount - 1
+            if (netcount <= 0) {
+                inaction = 4
+            }
+        } else if (inaction === 4) {
+            if (ropecount > 0) {
+                ropeto = getropeto(ropecount)
+                ropecount = ropecount - 1
+            } else {
+                inaction = 0
+            }
+        }
+    }
+    draw()
+}
+
+function drawitem() {
+    ctx.drawImage(haikei1, 0, 0)
+    if (canxy.x !== -1) {
+        drawcandy(canxy.x, canxy.y)
+    }
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(haikei, 0, 0)
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++) {
+                if (i === 0 || i === 4 || j === 0 || j === 4) {
+                    let k = i + j
+                    if (k >= 5) {
+                        k = k - 5
+                    }
+                    ctx.drawImage(candyb[k], 160 + 64 * i, 80 + 64 * j)
+                }
+            }
+        }
+        ctx.drawImage(title, 224, 144)
+    } else if (mode === 5) {
+        drawitem()
+        if (inaction === 0) {
+            drawcatcher(catxy.x, catxy.y)
+        } else if (inaction === 1) {
+            drawstar(starxy.x, starxy.y)
+            drawrope(ropeto.x, ropeto.y)
+        } else if (inaction === 2 || inaction === 3) {
+            drawrope(ropeto.x, ropeto.y)
+            drawnet(starxy.x, starxy.y, netcount)
+        } else if (inaction === 4) {
+            drawrope(ropeto.x, ropeto.y)
+        }
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img class="candyb" src="candyb0.gif" style="display:none" />
+<img class="candyb" src="candyb1.gif" style="display:none" />
+<img class="candyb" src="candyb2.gif" style="display:none" />
+<img class="candyb" src="candyb3.gif" style="display:none" />
+<img class="candyb" src="candyb4.gif" style="display:none" />
+<img id="haikei" src="haikei.png" style="display:none" />
+<img id="haikei1" src="haikei1.png" style="display:none" />
+<img id="title" src="title.png" style="display:none" />
+<img class="candy" src="candy0.gif" style="display:none" />
+<img class="candy" src="candy1.gif" style="display:none" />
+<img class="candy" src="candy2.gif" style="display:none" />
+<img id="catcher" src="catcher.gif" style="display:none" />
+<img id="star" src="star.gif" style="display:none" />
+<img id="net" src="net.gif" style="display:none" />
+</body>
+</html>

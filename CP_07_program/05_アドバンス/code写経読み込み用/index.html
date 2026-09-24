@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="./parts.js"></script>
+<script type="text/javascript">
+let timer = 20
+let player = { x:300, y:395, sx:40, sy:40, mx:10 }
+let teki = { x:10, y:70, sx:60, sy:60, mx:1, my:10 }
+let tama = { sx:20, sy:20, mx:10 }
+
+let mode = 0
+let tamaf = 0
+let tekinum = 32
+let tekia = []
+let kougeki = 0
+let hidari = 0
+let migi = 0
+
+function keyUp(evt) {
+
+}
+
+function keyDown(evt) {
+
+}
+
+function mainloop() {
+
+    draw()
+}
+
+function draw() {
+
+    ctx.fillStyle = ctx.createPattern(tekii, 'repeat')
+
+}
+</script>
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="back1i" src="back1.png" style="display:none;" />
+<img id="back2i" src="back2.png" style="display:none;" />
+<img id="playeri" src="player.gif" style="display:none;" />
+<img id="tekii" src="enemy.gif" style="display:none;" />
+<img id="tamai" src="pbomb.gif" style="display:none;" />
+</body>
+</html>

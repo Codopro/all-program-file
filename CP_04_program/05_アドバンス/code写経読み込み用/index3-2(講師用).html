@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+}
+
+function keyDown(evt) {
+}
+
+function mainloop() {
+
+    draw()
+}
+
+function drawfield() {
+}
+
+function draw() {
+    for (let i = 0; i < 2; i++) {
+	    ctx.drawImage(wall[0], 200 + 24 * i, 72)
+	}
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="title" src="title.png" style="display:none" />
+<img id="haikei" src="haikei.png" style="display:none" />
+<img class="wall" src="wall0.gif" style="display:none" />
+<img class="wall" src="wall1.gif" style="display:none" />
+<img class="wall" src="wall2.gif" style="display:none" />
+<img id="himemini" src="himemini.png" style="display:none" />
+<img id="pad" src="pad.gif" style="display:none" />
+<img class="ball" src="ball0.gif" style="display:none" />
+<img class="ball" src="ball1.gif" style="display:none" />
+<img class="ball" src="ball2.gif" style="display:none" />
+<img class="ball" src="ball3.gif" style="display:none" />
+<img id="himelost" src="himelost.png" style="display:none" />
+<img id="himeclear" src="himeclear.png" style="display:none" />
+</body>
+</html>

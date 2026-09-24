@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+//ゲームの開始の時にやること
+function start() {
+
+    timerno = setInterval(mainloop, timer)
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt)
+
+}
+
+//マウスが動いた時にやること
+function onmove_canvas(evt) {
+
+}
+
+//一定時間おきにやること
+function mainloop() {
+
+    draw()
+}
+
+//はいけい、キャンディなどをえがく
+function drawitem() {
+
+}
+
+//画面をえがく
+function draw() {
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="candyb" src="candyb0.gif" style="display:none" /> <!-- キャンディ大画像[0]おき場 -->
+<img class="candyb" src="candyb1.gif" style="display:none" /> <!-- キャンディ大画像[1]おき場 -->
+<img class="candyb" src="candyb2.gif" style="display:none" /> <!-- キャンディ大画像[2]おき場 -->
+<img class="candyb" src="candyb3.gif" style="display:none" /> <!-- キャンディ大画像[3]おき場 -->
+<img class="candyb" src="candyb4.gif" style="display:none" /> <!-- キャンディ大画像[4]おき場 -->
+<img id="haikei" src="haikei.png" style="display:none" /> <!-- タイトルはいけい画像おき場 -->
+<img id="haikei1" src="haikei1.png" style="display:none" /> <!-- プレイはいけい画像おき場 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img class="candy" src="candy0.gif" style="display:none" /> <!-- キャンディ画像[0]おき場 -->
+<img class="candy" src="candy1.gif" style="display:none" /> <!-- キャンディ画像[1]おき場 -->
+<img class="candy" src="candy2.gif" style="display:none" /> <!-- キャンディ画像[2]おき場 -->
+<img id="catcher" src="catcher.gif" style="display:none" /> <!-- キャッチャー画像おき場 -->
+<img id="star" src="star.gif" style="display:none" /> <!-- 星画像おき場 -->
+<img id="net" src="net.gif" style="display:none" /> <!-- ネット画像おき場 -->
+</body>
+</html>

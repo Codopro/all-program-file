@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript">
+
+let otono = 8
+let oto = [
+    "魔王魂  ピアノ1-1ド",
+    "魔王魂  ピアノ1-2レ",
+    "魔王魂  ピアノ1-3ミ",
+    "魔王魂  ピアノ1-4ファ",
+    "魔王魂  ピアノ1-5ソ",
+    "魔王魂  ピアノ1-6ラ",
+    "魔王魂  ピアノ1-7シ",
+    "魔王魂  ピアノ1-8ド",
+] //音のリスト
+let sounds = [] //効果音のリスト
+let timerv = 250
+let timer = timerv
+
+function init() {
+    canvas = document.getElementById('canvas')
+    ctx = canvas.getContext('2d')
+    addEventListener('keydown', keyDown, true)
+    addEventListener('keyup', keyUp, true)
+    timerno = setInterval(mainloop, timer)
+
+    start() //開始処理を呼ぶ
+}
+
+//ゲームの開始の時にやること
+function start() {
+    for (let i = 0; i < otono; i++) {
+        sounds[i] = new Audio(oto[i] + ".mp3") //効果音を読み込む
+        sounds[i].preload = "auto" //音が自動で流れるようにセットする
+        sounds[i].load() //効果音を読み込んでおく
+    }
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+}
+
+//一定時間おきにやること
+function mainloop() {
+    draw()
+}
+
+//画面をえがく
+function draw() {
+    ctx.drawImage(piano, 10, 10, 800, 700)
+}
+
+</script>
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="piano" src="piano鍵盤.png" style="display:none" /> <!-- 鍵盤画像おき場 -->
+</body>
+</html>

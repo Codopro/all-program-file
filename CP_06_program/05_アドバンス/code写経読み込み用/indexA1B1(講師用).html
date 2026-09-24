@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+function start() {
+    for (let i = 0; i < 3; i++) {
+        oto[i] = new Audio("oto" + i + ".mp3")
+        oto[i].preload = "auto"
+        oto[i].load()
+    }
+    timerno = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+    if (mode === 0 && evt.keyCode === 13) {
+        oto[0].currentTime = 0
+        oto[0].play()
+        target[0].e = 1
+        target[0].x = Math.floor(Math.random() * (window1.sx - targeti.x * 2)) + targeti.x
+        boxlist[onbox].e = 1
+        dronemode = 1
+        mode = 5
+    } else if (mode === 5 && dronemode === 1 && evt.keyCode === 32) {
+        boxlist[onbox].e = 2
+        boxlist[onbox].x = dronexy.x
+        boxlist[onbox].y = dronexy.y - drones.y / 2 + dropy
+        boxlist[onbox].p = 0
+        dronemode = 0
+    } else if (mode === 5 && dronemode === 0 && evt.keyCode === 13) {
+        mode = getnextbox()
+    } else if (mode === 9 && evt.keyCode === 27) {
+        for (let i = 0; i < targetnum; i++) {
+            target[i] = { e:0, x:targeti.x, y:targeti.y, on:0 }
+        }
+        for (let i = 0; i < boxnum; i++) {
+            boxlist[i] = { e:0, n:0, x:dronexy.x, y:dronexy.y + boxs.y / 2, s:1, p:0 }
+        }
+        haikeiy = 0
+        dronexy = { x:dronei.x, y:dronei.y }
+        dronemode = 1
+        onbox = 0
+        targett = targetti
+        targetnext = targett
+        score = 0
+        target[0].e = 1
+        target[0].x = Math.floor(Math.random() * (window1.sx - targeti.x * 2)) + targeti.x
+        boxlist[onbox].e = 1
+        mode = 5
+    }
+}
+
+function keyDown(evt) {
+    if (mode === 5) {
+        dronexy = movedrone(evt.keyCode, dronexy.x, dronexy.y)
+    }
+}
+
+function mainloop() {
+    if (mode === 5 || mode === 6) {
+        haikeiy = haikeirenketsu(haikeiy)
+        for (let i = 0; i < targetnum; i++) {
+            if (target[i].e > 0) {
+                targetmove(i)
+                if (target[i].on === 0 && target[i].y >= window1.sy + targets.y) {
+                    oto[1].currentTime = 0
+                    oto[1].play()
+                    mode = 9
+                    return
+                }
+            }
+        }
+        for (let i = 0; i < boxnum; i++) {
+            movedropedbox(i)
+            if (boxlist[i].e === 4) {
+                for (let j = 0; j < targetnum; j++) {
+                    boxlist[i].p = getpoint(i, j)
+                    if (boxlist[i].p > 0) {
+                        oto[2].currentTime = 0
+                        oto[2].play()
+                        score = score + boxlist[i].p
+                        target[j].on = 1
+                        break
+                    }
+                }
+            }
+            boxdroping(i)
+            removebox(i)
+        }
+        nexttarget()
+        targett = targetspeedup()
+    }
+    if (mode === 6) {
+        mode = dropnextbox()
+    }
+    draw()
+}
+
+function drawfield() {
+    ctx.drawImage(haikei[1], 0, haikeiy)
+    ctx.drawImage(haikei[1], 0, haikeiy - window1.sy)
+    for (let i = 0; i < targetnum; i++) {
+        if (target[i].e > 0) {
+            drawtarget(i)
+        }
+    }
+    for (let i = 0; i < boxnum; i++) {
+        if (boxlist[i].e >= 2 && boxlist[i].e <= 5) {
+            drawbox(boxlist[i].n, boxlist[i].x, boxlist[i].y, 1 - 0.1 * boxlist[i].e)
+            if (boxlist[i].p > 0) {
+                drawpoint(i)
+            }
+        }
+    }
+    drawdrone(dronexy.x, dronexy.y)
+    if (dronemode === 1) {
+        drawbox(0, dronexy.x, dronexy.y + boxs.y / 2)
+    } else if (mode === 6) {
+        drawbox(0, dronexy.x, dronexy.y + boxs.y / 2, 21 - boxlist[onbox].e)
+    }
+    ctx.drawImage(msg[dronemode], 125, 8)
+    drawscore(score)
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(haikei[0], 0, 0)
+        for (let j = 0; j < 4; j++) {
+            for (let i = 0; i < 3; i++) {
+                if (i < 2) {
+                    drawbox(i, 556 * i + 42, 60 * j + 42, 1 - j * 0.2)
+                } else {
+                    drawbox(i, 42, -60 * j + 438, 1 - j * 0.2)
+                }
+            }
+        }
+        drawdrone(566, 406)
+    } else if (mode === 5 || mode === 6) {
+        drawfield()
+    } else if (mode === 9) {
+        drawgameover()
+        ctx.drawImage(msg[2], 125, 8)
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img class="box" src="box0.gif" style="display:none" />
+<img class="box" src="box1.gif" style="display:none" />
+<img class="box" src="box2.gif" style="display:none" />
+<img class="haikei" src="haikei0.png" style="display:none" />
+<img class="haikei" src="haikei1.png" style="display:none" />
+<img id="drone" src="drone.gif" style="display:none" />
+<img id="target0" src="target0.gif" style="display:none" />
+<img class="msg" src="msg0.png" style="display:none" />
+<img class="msg" src="msg1.png" style="display:none" />
+<img class="msg" src="msg2.png" style="display:none" />
+</body>
+</html>

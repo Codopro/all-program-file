@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//11.キャンディを落としたらゲームオーバーにしよう
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) //マウスカーソルの座標を得る
+    if (mode === 0 && mouse.x >= 224 && mouse.x <= 416 && mouse.y >= 144 && mouse.y <= 336) { //タイトルモードでタイトルがクリックされたら
+        catxy = { x:mouse.x, y:mouse.y } //キャッチャーの中心座標をマウスカーソルの座標にする
+        mode = 5 //プレイモードにする
+    } else if (mode === 5 && inaction === 0) { //プレイモードでキャッチング開始前にクリックされたら
+        starxy = { x:catxy.x, y:catxy.y } //星の中心座標をキャッチャーの中心座標にする
+        stardist = getstardist(starxy.x, starxy.y) //キャンディバケツから星までの距離(横とたての長い方)を求める
+        ropestep = stardist / ropelen //ロープを星まで伸ばす回数を求める
+        ropev = getropelen(ropestep) //ロープを伸ばす長さのたて横1回分を求める
+        ropecount = 0 //ロープを伸ばした回数を0にしておく
+        inaction = 1 //キャッチング開始（ロープを伸ばす状態）とする
+    }
+}
+
+//マウスが動いた時にやること
+function onmove_canvas(evt) {
+    if (mode === 5) { //プレイモードならば
+        mouse = mousezahyo(canvas, evt) //マウスカーソルの座標を得る
+        catxy = { x:mouse.x, y:mouse.y } //キャッチャーの中心座標をマウスカーソルの座標にする
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 5) { //プレイモードならば
+        if (canxy.x === -1) { //キャンディがない？
+            canxy.x = setcandy() //キャンディのX座標を乱数で決める
+        } else { //キャンディがある？
+            canxy.y = canxy.y + candyspeed //キャンディを落とす
+            if (canxy.y > window1.sy + candys.y) { //キャンバスの外に出たら
+                //canxy = { x:-1, y:0 } //【削除】キャンディを消し、高さを元に戻す
+                mode = 9 //【追加】ゲームオーバーモードにする
+            }
+        }
+        if (inaction === 1) { //ロープを伸ばしている？
+            if (ropecount < ropestep) { //途中ならば
+                ropeto = getropeto(ropecount) //ロープを回数分伸ばした位置の座標を求める
+                ropecount = ropecount + 1 //ロープを伸ばした回数をカウントアップ
+            } else { //ロープが星に届くならば
+                ropeto = { x:starxy.x, y:starxy.y } //ロープの先の座標を星の中心座標に合わせる
+                netcount = 0 //ネットを広げた回数をクリア
+                inaction = 2 //ネットを広げる状態にする
+            }
+        } else if (inaction === 2) { //ネットを広げている？
+            candyget = netcandycheck() //キャンディがネットにかかっているかチェックする
+            netcount = netcount + 1 //ネットを広げた回数をカウントアップ
+            if (netcount >= netcounts) { //ネットが最大まで広がったら
+                inaction = 3 //ネットをちぢめる状態にする
+            }
+        } else if (inaction === 3) { //ネットをちぢめている？
+            candyget = netcandycheck() //キャンディがネットにかかっているかチェックする
+            netcount = netcount - 1 //ネットを広げた回数をカウントダウン
+            if (netcount <= 0) { //ネットがちぢんだら
+                inaction = 4 //ロープを戻す状態にする
+            }
+        } else if (inaction === 4) { //ロープを戻している？
+            if (ropecount > 0) { //途中ならば
+                ropeto = getropeto(ropecount) //ロープを回数分伸ばした位置の座標を求める
+                ropecount = ropecount - 1 //ロープを伸ばした回数をカウントダウン
+            } else { //ロープが戻り切ったならば
+                if (candyget === 1) { //キャンディがかかっていたら
+                    candyget = 0 //キャンディがネットにかかっていない状態に戻す
+                }
+                inaction = 0 //キャッチング開始前の状態に戻す
+            }
+        }
+    }
+    draw() //画面をえがく処理を呼ぶ
+}
+
+//はいけい、キャンディなどをえがく
+function drawitem() {
+    ctx.drawImage(haikei1, 0, 0) //プレイはいけい画像を表示
+    if (canxy.x !== -1) { //キャンディがあるならば
+        drawcandy(canxy.x, canxy.y) //キャンディ画像を表示
+    }
+    if (candyget === 1) { //キャンディがネットにかかっていたら
+        drawcandy(ropeto.x, ropeto.y) //ロープの先にキャンディ画像を表示
+    }
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトルモードなら
+        ctx.drawImage(haikei, 0, 0) //タイトルはいけい画像を表示
+        for (let i = 0; i < 5; i++) { //横に5回くり返す
+            for (let j = 0; j < 5; j++) { //縦に5回くり返す
+                if (i === 0 || i === 4 || j === 0 || j === 4) { //周囲であれば
+                    let k = i + j //画像が1つずつずれるようにする
+                    if (k >= 5) { //一回りしたら
+                        k = k - 5 //先頭にもどす
+                    }
+                    ctx.drawImage(candyb[k], 160 + 64 * i, 80 + 64 * j) //キャンディ大画像を表示
+                }
+            }
+        }
+        ctx.drawImage(title, 224, 144) //タイトル画像を表示
+    } else if (mode === 5) { //プレイモードならば
+        drawitem() //はいけい、キャンディなどをえがく
+        if (inaction === 0) { //キャッチング開始前？
+            drawcatcher(catxy.x, catxy.y) //キャッチャー画像を表示
+        } else if (inaction === 1) { //ロープを伸ばしている？
+            drawstar(starxy.x, starxy.y) //星を表示
+            drawrope(ropeto.x, ropeto.y) //ロープを表示
+        } else if (inaction === 2 || inaction === 3) { //ネットを広げて、または、ちぢめている？
+            drawrope(ropeto.x, ropeto.y) //ロープを表示
+            drawnet(starxy.x, starxy.y, netcount) //ネットを表示
+        } else if (inaction === 4) { //ロープを戻している？
+            drawrope(ropeto.x, ropeto.y) //ロープを表示
+        }
+    } else if (mode === 9) { //【以下追加】ゲームオーバーモードならば
+        drawitem() //はいけい、キャンディなどをえがく
+        drawgameover() //ゲームオーバーを表示
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="candyb" src="candyb0.gif" style="display:none" /> <!-- キャンディ大画像[0]おき場 -->
+<img class="candyb" src="candyb1.gif" style="display:none" /> <!-- キャンディ大画像[1]おき場 -->
+<img class="candyb" src="candyb2.gif" style="display:none" /> <!-- キャンディ大画像[2]おき場 -->
+<img class="candyb" src="candyb3.gif" style="display:none" /> <!-- キャンディ大画像[3]おき場 -->
+<img class="candyb" src="candyb4.gif" style="display:none" /> <!-- キャンディ大画像[4]おき場 -->
+<img id="haikei" src="haikei.png" style="display:none" /> <!-- タイトルはいけい画像おき場 -->
+<img id="haikei1" src="haikei1.png" style="display:none" /> <!-- プレイはいけい画像おき場 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img class="candy" src="candy0.gif" style="display:none" /> <!-- キャンディ画像[0]おき場 -->
+<img class="candy" src="candy1.gif" style="display:none" /> <!-- キャンディ画像[1]おき場 -->
+<img class="candy" src="candy2.gif" style="display:none" /> <!-- キャンディ画像[2]おき場 -->
+<img id="catcher" src="catcher.gif" style="display:none" /> <!-- キャッチャー画像おき場 -->
+<img id="star" src="star.gif" style="display:none" /> <!-- 星画像おき場 -->
+<img id="net" src="net.gif" style="display:none" /> <!-- ネット画像おき場 -->
+</body>
+</html>

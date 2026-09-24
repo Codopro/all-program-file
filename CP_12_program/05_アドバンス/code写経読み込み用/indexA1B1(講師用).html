@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+function start() {
+    timerno = setInterval(mainloop, timer) 
+}
+
+function keyUp(evt) {
+}
+
+function keyDown(evt) {
+    if (mode === 0 && evt.keyCode === 32) { 
+        mode = 3 
+    } else if (mode === 5) { 
+        if (evt.keyCode === 38) { 
+            playernow = 0 
+            playerpun = -1 
+        } else if (evt.keyCode === 40) { 
+            playernow = 1 
+            playerpun = -1 
+        } else if (evt.keyCode === 37 && playernow === 0) {
+            playernow = 2 
+            if (shadownow === 0) { 
+                playerpun = 0 
+                shadowdameged(playerpun) 
+            } else {
+                playerpun = -1 
+            }
+        } else if (evt.keyCode === 37 && playernow === 1) { 
+            playernow = 3 
+            if (shadownow === 1) { 
+                playerpun = 0 
+                shadowdameged(playerpun) 
+            } else {
+                playerpun = -1 
+            }
+        } else if (evt.keyCode === 39 && playernow === 2) { 
+            playernow = 0 
+            playerpun = -1 
+        } else if (evt.keyCode === 39 && playernow === 3) { 
+            playernow = 1 
+            playerpun = -1 
+        } 
+    } 
+}
+function mainloop() {
+    if (mode === 3) { 
+        count = count - 0.2 
+        if (count < 1.1) { 
+            count = 5.0 
+            mode = 4 
+        }
+    } else if (mode === 4) { 
+        count = count - 0.05 
+        if (count <= 0.0) { 
+            mode = 5 
+        }
+    } else if (mode === 5) { 
+        shadowcnt = shadowcnt - 1 
+        if (shadowcnt <= 0) { 
+            shadowcnt = shadowcnti 
+            shadowcnt = shadowcnt - (100 - shadowpow) / 10 
+            if (shadownow === 0 && playernow === 0) { 
+                shadownow = 2 
+                shadowpun = 0 
+                playerdameged(shadowpun) 
+            } else if (shadownow === 1 && playernow === 1) { 
+                shadownow = 3 
+                shadowpun = 0 
+                playerdameged(shadowpun) 
+            } else if (Math.random() < 0.5) { 
+                shadownow = 0 
+                shadowpun = -1 
+            } else {
+                shadownow = 1 
+                shadowpun = -1 
+            }
+        }
+    }
+    draw() }
+function drawact() {
+    ctx.drawImage(haikei, 0, 0) 
+    if (mode === 3) { 
+        drawshadow(shadowno, shadownow, count) 
+    } else { 
+        drawshadow(shadowno, shadownow) 
+    } 
+    drawplayer(playernow) 
+    if (mode >= 5) { 
+        drawplayerg(playerpow) 
+        drawshadowg(shadowpow) 
+        if (playerpun >= 0) { 
+            drawshadowpun(playerpun) 
+        }
+        if (shadowpun >= 0) { 
+            drawplayerpun(shadowpun) 
+        }
+    }
+    drawname(shadowno) 
+}
+function draw() {
+    if (mode === 0) { 
+        ctx.drawImage(title, 0, 0) 
+        for (let i = 0; i < 6; i++) {
+            if(i < 3) {
+                ctx.drawImage(fireimg, 60 + 40 * i, 275) 
+            } else {
+                ctx.drawImage(fireimg, 345 + 40 * i, 275) 
+            }
+        }    
+    } else if (mode === 3) { 
+        drawact() 
+    } else if (mode === 4) { 
+        drawact() 
+        drawcount(count) 
+    } else if (mode === 5) { 
+        drawact() 
+    } else if (mode === 8) { 
+        drawact() 
+        drawmessage("KO!!") 
+    } else if (mode === 9) { 
+        drawact() 
+        drawmessage("KO...") 
+        ctx.fillText("Game Over", 170, 470) 
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> 
+<canvas id="canvas" width="640" height="480" /></canvas> 
+<img id="title" src="title.png" style="display:none" /> 
+<img id="haikei" src="haikei.png" style="display:none" /> 
+<img class="playerimg" src="player0.gif" style="display:none" />
+<img class="playerimg" src="player1.gif" style="display:none" /> 
+<img class="playerimg" src="player2.gif" style="display:none" /> 
+<img class="playerimg" src="player3.gif" style="display:none" /> 
+<img class="aokage" src="aokage0.gif" style="display:none" /> 
+<img class="aokage" src="aokage1.gif" style="display:none" /> 
+<img class="aokage" src="aokage2.gif" style="display:none" /> 
+<img class="aokage" src="aokage3.gif" style="display:none" /> 
+<img class="shirokage" src="shirokage0.gif" style="display:none" /> 
+<img class="shirokage" src="shirokage1.gif" style="display:none" /> 
+<img class="shirokage" src="shirokage2.gif" style="display:none" /> 
+<img class="shirokage" src="shirokage3.gif" style="display:none" /> 
+<img class="akakage" src="akakage0.gif" style="display:none" /> 
+<img class="akakage" src="akakage1.gif" style="display:none" /> 
+<img class="akakage" src="akakage2.gif" style="display:none" /> 
+<img class="akakage" src="akakage3.gif" style="display:none" /> 
+<img id="fireimg" src="fire.gif" style="display:none" /> 
+<img id="punch" src="punch.gif" style="display:none" /> 
+</body>
+</html>

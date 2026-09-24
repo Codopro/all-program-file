@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+    if (mode === 0 && evt.keyCode === 13) {
+        setmap(0)
+        mode = 4
+    } else if (mode === 4 && evt.keyCode === 32) {
+        mode = 5
+    }
+}
+
+function keyDown(evt) {
+    if (mode === 4 || mode === 5) {
+        if (evt.keyCode === 37 && padxy.x > 0) {
+            padxy.x = padxy.x - padspeed
+            if (padxy.x < 0) {
+                padxy.x = 0
+            }
+            if (mode === 4) {
+                ballxy.x = padxy.x + 36
+            }
+        } else if (evt.keyCode === 39 && padxy.x + pads.x < window1.sx) {
+            padxy.x = padxy.x + padspeed
+            if (padxy.x  + pads.x > window1.sx) {
+                padxy.x = window1.sx - pads.x
+            }
+            if (mode === 4) {
+                ballxy.x = padxy.x + 36
+            }
+        }
+    }
+}
+
+function mainloop() {
+    if (mode === 5) {
+        if (ballv === 0) {
+            ballxy.x = ballxy.x - ballspeed
+            ballxy.y = ballxy.y - ballspeed
+        } else if (ballv === 1) {
+            ballxy.x = ballxy.x + ballspeed
+            ballxy.y = ballxy.y - ballspeed
+        } else if (ballv === 2) {
+            ballxy.x = ballxy.x + ballspeed
+            ballxy.y = ballxy.y + ballspeed
+        } else if (ballv === 3) {
+            ballxy.x = ballxy.x - ballspeed
+            ballxy.y = ballxy.y + ballspeed
+        }
+        if (ballxy.y > window1.sy) {
+            mode = 8
+        } else {
+            ballv = padcheck(ballv, ballxy, padxy)
+            ballv = edgecheck(ballv, ballxy)
+        }
+    }
+    draw()
+}
+
+function drawfield() {
+    drawwall()
+    ctx.drawImage(ball[ballv], ballxy.x, ballxy.y)
+}
+
+function draw() {
+    ctx.drawImage(haikei, 0, 0)
+    if (mode === 0) {
+        for (let j = 0; j < 10; j++) {
+            for (let i = 0; i < 10; i++) {
+                if (j === 0) {
+                    ctx.drawImage(wall[1], 200 + 24 * i, 72 + 24 * j)
+                } else if (i !== 1 && i !== 8 || j !== 1 && j !== 8) {
+                    ctx.drawImage(wall[0], 200 + 24 * i, 72 + 24 * j)
+                }
+            }
+        }
+        ctx.drawImage(title, 248, 120)
+        drawstart()
+    } else if (mode === 4 || mode === 5)  {
+        ctx.drawImage(pad, padxy.x, padxy.y)
+        drawfield()
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="title" src="title.png" style="display:none" />
+<img id="haikei" src="haikei.png" style="display:none" />
+<img class="wall" src="wall0.gif" style="display:none" />
+<img class="wall" src="wall1.gif" style="display:none" />
+<img class="wall" src="wall2.gif" style="display:none" />
+<img id="himemini" src="himemini.png" style="display:none" />
+<img id="pad" src="pad.gif" style="display:none" />
+<img class="ball" src="ball0.gif" style="display:none" />
+<img class="ball" src="ball1.gif" style="display:none" />
+<img class="ball" src="ball2.gif" style="display:none" />
+<img class="ball" src="ball3.gif" style="display:none" />
+</body>
+</html>

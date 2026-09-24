@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//C-1.↓キーを押した回数だけ下に落とせるようにしよう
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+    if ((mode === 0 || mode === 9) && evt.keyCode === 13) { //【B-1:変更】タイトルモードかゲームオーバーモードでEnterキーが押されたら
+        if (mode === 9) { //【B-1:以下追加】ゲームオーバーモードなら
+            slimenum = 3 //スライムの種類数を戻す
+            for (let i = 0; i < cols; i++) { //ステージの全列についてくり返す
+                for (let j = 0; j < lines; j++) { //ステージの全行についてくり返す
+                    smap[i][j] = -1 //空に戻す
+                }
+            }
+            slimexy = { x:102, y:-102 } //落下中のスライムズの初期座標を戻す
+            score = 0 //スコアを戻す
+            point = 0 //今回のポイントを戻す
+            erasecounter = 0 //消去カウンタを戻す
+            rensacounter = -1 //れんさカウンタを戻す
+        }
+        for (let i = 0; i < 6; i++) { //すべての予告についてくり返す
+            setyokoku(i) //予告をセットして落下するスライムズにコピーする
+        }
+        mode = 5 //プレイモードにする
+    } else if (mode === 5 && evt.keyCode === 40) { //【C-1:以下追加】プレイモードで↓キーが押されたら
+        if (slimexy.y >= 0 && slimexy.y <= slimesize * (lines - 2)) { //落下中スライムズが全て表示されていて下移動が可能なら
+            let st = getmap(slimexy) //落下中スライムズの左上座標から３つめのスライムの位置を得る
+            if (smap[st.dx][st.dy + 1] === -1) { //下が空いていたら
+                slimexy.y = slimexy.y + slimesize //下に移動
+                point = point + 1 //ポイントに1点加算
+            }
+        }
+    }
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+    if (mode === 5) { //プレイモードならば
+        if (evt.keyCode === 37 && slimexy.x >= slimesize) { //←キーが押されステージの左端ではなかったら
+            moveleft() //落下中スライムズの左側にスライムがいなければ左に動かす
+        } else if (evt.keyCode === 39 && slimexy.x < slimesize * 5) { //→キーが押されステージの右端ではなかったら
+            moveright() //落下中スライムズの右側にスライムがいなければを右に動かす
+        } else if (evt.keyCode === 32) { //スペースキーが押されたら
+            let temp = slimes[0]  //１つめのスライムをたいひしておいて
+            slimes[0] = slimes[1] //２つめのスライムを１つめへ
+            slimes[1] = slimes[2] //３つめのスライムを２つめへ
+            slimes[2] = temp //たいひしてあった１つめのスライムを３つめへ
+        }
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 5) { //プレイモードならば
+        if (canslimefall()) { //落下中スライムズがさらに落下できるならば
+            let py = slimexy.y //落下させる前のY座標を取っておく
+            slimexy.y = slimesize / falldiv + slimexy.y //スライムズを落下させる
+            if (py < 0 && slimexy.y >= 0) { //ちょうど落下中スライムズが全て表示されたら
+                if (score >= 300) { //【A-1:以下追加】300点以上になったら
+                    slimenum = 6 //スライムの種類数を6に
+                } else if (score >= 200) { //200点以上になったら
+                    slimenum = 5 //スライムの種類数を5に
+                } else if (score >= 100) { //100点以上になったら
+                    slimenum = 4 //スライムの種類数を4に
+                }
+                setnewyokoku() //予告を前にずらして新しい予告をセットする
+            }
+        } else { //もう落下できなければ
+            if (slimexy.y < 0) { //落下中スライムズが表示しきれくなっていたら
+                hiscoreupdate(score) //【B-2:追加】ハイスコア更新
+                mode = 9 //ゲームオーバーモードにする
+                return //この空いて抜ける
+            }
+            endslimefall() //落下中スライムズをステージマップにセットして次のスライムズを用意する
+            mode = 6 //並びチェックモードにする
+        }
+    } else if (mode === 6) { //並びチェックモードならば
+        narabicheck() //同色のスライムが３つ並んでいたらステージマップに書いてポイントに加算し消去モードにする
+    } else if (mode === 7) { //消去モードならば
+        erasecnt = erasecnt - 1 //消去カウントダウン
+        if (erasecnt === 0) { //消去カウントがゼロになったら
+            eraseslime() //そろったスライムを消す
+            mode = 6 //れんさチェックのために並びチェックモードに戻す
+        }
+    }
+    draw() //画面をえがく
+}
+
+//はいけい、ステージ、タイトルなどをえがく
+function drawfield() {
+    drawhaikei() //はいけい画像を表示
+    ctx.drawImage(stage, stagex, 0) //ステージ画像を表示
+    ctx.drawImage(title, 320, 40) //タイトル画像を表示
+    drawyokoku() //予告を表示する
+    ctx.drawImage(rensaboard, 320, 296) //れんさ数ボード画像を表示
+    ctx.drawImage(pointboard, 320, 349) //ポイントボード画像を表示
+    ctx.drawImage(scoreboard, 320, 402) //スコアボード画像を表示
+    drawrensa() //れんさ数を表示
+    drawpoint() //ポイントを表示
+    drawscore() //スコアを表示
+    ctx.drawImage(msg, 473, 296) //メッセージボード画像を表示
+    if (hiscore[0] > 0) { //【B-2:以下追加】ハイスコア[0]があれば
+        drawhiscoretitle() //ハイスコアのタイトルを表示
+        drawhiscore(1) //その下に「(1)」と1位のハイスコアを表示
+        if (hiscore[1] > 0) { //ハイスコア[1]があれば
+            drawhiscore(2) //その下に「(2)」と2位のハイスコアを表示
+            if (hiscore[2] > 0) { //ハイスコア[2]があれば
+                drawhiscore(3) //その下に「(3)」と3位のハイスコアを表示
+            }
+        }
+    }
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトルモードなら
+        drawhaikei() //はいけい画像を表示
+        ctx.drawImage(titleback, 150, 16, 340, 448) //タイトルバック画像を表示
+        for (let i = 0; i < 8; i++) { //８回くり返す
+            if (i < 3) { //i=0,1,2ならば
+                ctx.drawImage(slimeb[i], 218, 68 * i + 16) //スライム画像タイトル用[0]～[2]を表示
+            } else if (i < 6) { //i=3,4,5ならば
+                ctx.drawImage(slimeb[i], 286, 68 * i + 56) //スライム画像タイトル用[3]～[5]を表示
+            } else { //i=6,7ならば
+                ctx.drawImage(slimeb[5], 68 * i - 54, 396) //スライム画像タイトル用[5]を表示
+            }
+        }
+    } else if (mode === 5 || mode === 9) { //プレイモードまたはゲームオーバーモードならば
+        drawfield() //はいけい、ステージ、タイトルなどをえがく
+        drawslimes() //落下中のスライムズをえがく
+        drawstageslime() //ステージ上のスライムを表示する
+    } else if (mode === 6) { //並びチェックモードならば
+        drawfield() //はいけい、ステージ、タイトルなどをえがく
+        drawstageslime() //ステージ上のスライムを表示する
+    } else if (mode === 7) { //消去モードならば
+        drawfield() //はいけい、ステージ、タイトルなどをえがく
+        drawslimebacklight() //ステージ上の並んでいるスライムの背景を光らせる
+        drawstageslime() //ステージ上のスライムを表示する
+    }
+    if (mode === 9) { //ゲームオーバーモードならば
+        drawgameover() //ゲームオーバーを表示
+        drawreplay() //【B-1:追加】リプレイを表示
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="titleback" src="titleback.png" style="display:none" /> <!-- タイトルバック画像おき場 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="haikei" src="haikei.png" style="display:none" /> <!-- はいけい画像おき場 -->
+<img class="slimeb" src="slimeb0.png" style="display:none" /> <!-- スライム画像タイトル用[0]おき場 -->
+<img class="slimeb" src="slimeb1.png" style="display:none" /> <!-- スライム画像タイトル用[1]おき場 -->
+<img class="slimeb" src="slimeb2.png" style="display:none" /> <!-- スライム画像タイトル用[2]おき場 -->
+<img class="slimeb" src="slimeb3.png" style="display:none" /> <!-- スライム画像タイトル用[3]おき場 -->
+<img class="slimeb" src="slimeb4.png" style="display:none" /> <!-- スライム画像タイトル用[4]おき場 -->
+<img class="slimeb" src="slimeb5.png" style="display:none" /> <!-- スライム画像タイトル用[5]おき場 -->
+<img class="slime" src="slime0.gif" style="display:none" /> <!-- スライム画像[0]おき場 -->
+<img class="slime" src="slime1.gif" style="display:none" /> <!-- スライム画像[1]おき場 -->
+<img class="slime" src="slime2.gif" style="display:none" /> <!-- スライム画像[2]おき場 -->
+<img class="slime" src="slime3.gif" style="display:none" /> <!-- スライム画像[3]おき場 -->
+<img class="slime" src="slime4.gif" style="display:none" /> <!-- スライム画像[4]おき場 -->
+<img class="slime" src="slime5.gif" style="display:none" /> <!-- スライム画像[5]おき場 -->
+<img class="nextimg" src="next1.png" style="display:none" /> <!-- ネクストナンバー画像[1]おき場 -->
+<img class="nextimg" src="next2.png" style="display:none" /> <!-- ネクストナンバー画像[2]おき場 -->
+<img class="nextimg" src="next3.png" style="display:none" /> <!-- ネクストナンバー画像[3]おき場 -->
+<img class="nextimg" src="next4.png" style="display:none" /> <!-- ネクストナンバー画像[4]おき場 -->
+<img class="nextimg" src="next5.png" style="display:none" /> <!-- ネクストナンバー画像[5]おき場 -->
+<img class="nextimg" src="next6.png" style="display:none" /> <!-- ネクストナンバー画像[6]おき場 -->
+<img id="nextbar" src="nextbar.png" style="display:none" /> <!-- ネクストバー画像おき場 -->
+<img id="stage" src="stage.png" style="display:none" /> <!-- ステージ画像おき場 -->
+<img id="msg" src="msg.png" style="display:none" /> <!-- メッセージボード画像おき場 -->
+<img id="shine" src="shine.gif" style="display:none" /> <!-- スライムの背景の光画像おき場 -->
+<img id="rensaboard" src="rensaboard.png" style="display:none" /> <!-- れんさ数ボード画像おき場 -->
+<img id="pointboard" src="pointboard.png" style="display:none" /> <!-- ポイントボード画像おき場 -->
+<img id="scoreboard" src="scoreboard.png" style="display:none" /> <!-- スコアボード画像おき場 -->
+</body>
+</html>

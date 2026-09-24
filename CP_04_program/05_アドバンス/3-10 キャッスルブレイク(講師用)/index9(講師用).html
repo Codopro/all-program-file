@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+//9.ボールをロストしたらゲームオーバーにしよう
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+    if (mode === 0 && evt.keyCode === 13) { //タイトルモードでEnterキーが押されたら
+        setmap(0) //ステージのマップを読み込む
+        mode = 4 //発射待ちモードにする
+    } else if (mode === 4 && evt.keyCode === 32) { //発射待ちモードでスペースキーが押されたら
+        mode = 5 //プレイモードにする
+    }
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+    if (mode === 4 || mode === 5) { //発射待ちモードかプレイモードならば
+        if (evt.keyCode === 37 && padxy.x > 0) { //←キーが押され左端ではなかったら
+            padxy.x = padxy.x - padspeed //パドルを左に動かす
+            if (padxy.x < 0) { //端より先に行っていたら
+                padxy.x = 0 //端に戻す
+            }
+            if (mode === 4) { //発射待ちモードならば
+                ballxy.x = padxy.x + 36 //ボールも左に動かす
+            }
+        } else if (evt.keyCode === 39 && padxy.x + pads.x < window1.sx) { //→キーが押され右端ではなかったら
+            padxy.x = padxy.x + padspeed //パドルを右に動かす
+            if (padxy.x  + pads.x > window1.sx) { //端より先に行っていたら
+                padxy.x = window1.sx - pads.x //端に戻す
+            }
+            if (mode === 4) { //発射待ちモードならば
+                ballxy.x = padxy.x + 36 //ボールも右に動かす
+            }
+        }
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 5) { //プレイモードならば
+        if (ballv === 0) { //ボールの方向が左上ならば
+            ballxy.x = ballxy.x - ballspeed
+            ballxy.y = ballxy.y - ballspeed
+        } else if (ballv === 1) { //ボールの方向が右上ならば
+            ballxy.x = ballxy.x + ballspeed
+            ballxy.y = ballxy.y - ballspeed
+        } else if (ballv === 2) { //ボールの方向が右下ならば
+            ballxy.x = ballxy.x + ballspeed
+            ballxy.y = ballxy.y + ballspeed
+        } else if (ballv === 3) { //ボールの方向が左下ならば
+            ballxy.x = ballxy.x - ballspeed
+            ballxy.y = ballxy.y + ballspeed
+        }
+        if (ballxy.y > window1.sy) { //下端に落ちたら
+            mode = 8 //ロストモードにする
+        } else {
+            ballv = padcheck(ballv, ballxy, padxy) //ボールがパドルについたら向きを変える
+            ballv = edgecheck(ballv, ballxy) //ボールが上左右端についたら向きを変える
+        }
+    }
+    draw() //画面をえがく
+}
+
+//城へき、ボールなどをえがく
+function drawfield() {
+    drawwall() //城へきと姫（小）をえがく
+    ctx.drawImage(ball[ballv], ballxy.x, ballxy.y) //ボールを表示
+}
+
+//画面をえがく
+function draw() {
+    ctx.drawImage(haikei, 0, 0) //はいけいを表示
+    if (mode === 0) { //タイトルモードなら
+        for (let j = 0; j < 10; j++) { //行方向に10回くり返す
+            for (let i = 0; i < 10; i++) { //列方向に10回くり返す
+                if (j === 0) { //最上行であれば
+                    ctx.drawImage(wall[1], 200 + 24 * i, 72 + 24 * j) //かべ画像[1]を表示
+                } else if (i !== 1 && i !== 8 || j !== 1 && j !== 8) { //一つ内側の四すみではなければ
+                    ctx.drawImage(wall[0], 200 + 24 * i, 72 + 24 * j) //かべ画像[0]を表示
+                }
+            }
+        }
+        ctx.drawImage(title, 248, 120) //タイトルを表示
+        drawstart() //"Hit ENTER to start"を表示
+    } else if (mode === 4 || mode === 5)  { //発射待ちモードまたはプレイモードなら
+        ctx.drawImage(pad, padxy.x, padxy.y) //パドルを表示
+        drawfield() //城へき、ボールなどをえがく
+    } else if (mode === 8)  { //【以下追加】ロストモードなら
+        ctx.drawImage(himelost, 192, 0) //姫画像（大・ロスト）を表示
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="haikei" src="haikei.png" style="display:none" /> <!-- はいけい画像おき場 -->
+<img class="wall" src="wall0.gif" style="display:none" /> <!-- かべ画像[0]おき場 -->
+<img class="wall" src="wall1.gif" style="display:none" /> <!-- かべ画像[1]おき場 -->
+<img class="wall" src="wall2.gif" style="display:none" /> <!-- かべ画像[2]おき場 -->
+<img id="himemini" src="himemini.png" style="display:none" /> <!-- 姫画像（小）おき場 -->
+<img id="pad" src="pad.gif" style="display:none" /> <!-- パドル画像おき場 -->
+<img class="ball" src="ball0.gif" style="display:none" /> <!-- ボール画像[0]おき場 -->
+<img class="ball" src="ball1.gif" style="display:none" /> <!-- ボール画像[1]おき場 -->
+<img class="ball" src="ball2.gif" style="display:none" /> <!-- ボール画像[2]おき場 -->
+<img class="ball" src="ball3.gif" style="display:none" /> <!-- ボール画像[3]おき場 -->
+<img id="himelost" src="himelost.png" style="display:none" /> <!-- 姫画像（大・ロスト）おき場 -->
+</body>
+</html>

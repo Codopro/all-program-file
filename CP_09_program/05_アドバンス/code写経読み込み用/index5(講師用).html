@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript" src="map.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+}
+
+function keyDown(evt) {
+}
+
+function mainloop() {
+    draw()
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(base, 0, 0)
+        ctx.font = '72pt Arial'
+        ctx.fillStyle = 'Orange'
+        ctx.fillText('Robo Runner', 30, 150)
+        ctx.font = '26pt Arial'
+        ctx.fillText('Hit Enter key to Start', 170, 450)
+        for (let j = 0; j < 5; j++) {
+            for (let i = 0; i < 5; i++) {
+                if (i !== j) {
+                    ctx.drawImage(hazard, i * 40 + 220, j * 40 + 220)
+                }
+            }
+        }
+    }
+}
+</script>
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img id="base" src="base.png" style="display:none" />
+<img class="robot" src="robot0.gif" style="display:none" />
+<img class="robot" src="robot1.gif" style="display:none" />
+<img class="robot" src="robot2.gif" style="display:none" />
+<img id="hazard" src="hazard.png" style="display:none" />
+<img id="bonusitem" src="bonusitem.gif" style="display:none" />
+<img id="bonusget" src="bonusget.gif" style="display:none" />
+<img id="speedup" src="speedup.gif" style="display:none" />
+<img id="itemget" src="itemget.gif" style="display:none" />
+</body>
+</html>

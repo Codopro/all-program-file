@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//5.プレイ画面を表示しよう
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) //マウスの座標を得る
+    if (mode === 0) { //【以下追加】タイトルモードならば
+        mode = 5 //通常プレイモードにする
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+
+    draw() //画面をえがく処理を呼ぶ
+}
+
+//箱・タイトル・ばくだん数・フラグ数をえがく
+function drawitem() {
+    for (let i = 0; i < cols; i++) { //【以下追加】列数の分だけくり返す
+        for (let j = 0; j < cols; j++) { //行数の分だけくり返す
+            drawbox(i, j) //箱を表示
+        }
+    }
+    ctx.drawImage(title, 490, 33, 120, 120) //【追加】タイトルを表示
+    ctx.drawImage(bombflag, 490, 180, 120, 120) //【追加】ばくだん数とフラグ数の画像を表示
+    drawbombs(bombs) //【追加】ばくだん数を表示
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //【追加】タイトルモードなら
+        for (let i = 0; i < 3; i++) { //横に3回くり返す
+            for (let j = 0; j < 3; j++) { //縦に3回くり返す
+                if (i + j <= 1) { //i,jが(0,0)(1,0)(0,1)ならば
+                    ctx.drawImage(box, 160 * i, 160 * j, 160, 160) //箱画像を表示
+                } else if (i === 1 && j === 1) { //i,jが(1,1)ならば
+                    ctx.drawImage(titlebox, 160 * i, 160 * j, 160, 160) //タイトル箱画像を表示
+                } else { //i,jが(0,2)(1,2)(2,0)(2,1)(2,2)ならば
+                    ctx.drawImage(bomb, 160 * i, 160 * j, 160, 160) //爆弾画像を表示
+                }
+            }
+        }
+    } else if (mode === 5) { //【以下追加】プレイモードならば
+        ctx.drawImage(haikei[0], 0, 0) //はいけい[0]画像を表示
+        drawitem() //箱・タイトル・ばくだん数・フラグ数をえがく
+        ctx.drawImage(msg[0], 490, 325, 120, 120) //メッセージ[0]画像を表示
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="titlebox" src="titlebox.png" style="display:none" /> <!-- タイトル箱画像おき場 -->
+<img id="box" src="box.png" style="display:none" /> <!-- 箱画像おき場 -->
+<img class="haikei" src="haikei0.png" style="display:none" /> <!-- はいけい画像[0]おき場 -->
+<img class="haikei" src="haikei1.png" style="display:none" /> <!-- はいけい画像[1]おき場 -->
+<img class="haikei" src="haikei2.png" style="display:none" /> <!-- はいけい画像[2]おき場 -->
+<img class="num" src="num0.png" style="display:none" /> <!-- 数字画像[0]おき場 -->
+<img class="num" src="num1.png" style="display:none" /> <!-- 数字画像[1]おき場 -->
+<img class="num" src="num2.png" style="display:none" /> <!-- 数字画像[2]おき場 -->
+<img class="num" src="num3.png" style="display:none" /> <!-- 数字画像[3]おき場 -->
+<img class="num" src="num4.png" style="display:none" /> <!-- 数字画像[4]おき場 -->
+<img class="num" src="num5.png" style="display:none" /> <!-- 数字画像[5]おき場 -->
+<img class="num" src="num6.png" style="display:none" /> <!-- 数字画像[6]おき場 -->
+<img class="num" src="num7.png" style="display:none" /> <!-- 数字画像[7]おき場 -->
+<img id="empty" src="empty.png" style="display:none" /> <!-- 空箱画像おき場 -->
+<img class="msg" src="msg0.png" style="display:none" /> <!-- メッセージ画像[0]おき場 -->
+<img class="msg" src="msg1.png" style="display:none" /> <!-- メッセージ画像[1]おき場 -->
+<img class="msg" src="msg2.png" style="display:none" /> <!-- メッセージ画像[2]おき場 -->
+<img class="msg" src="msg3.png" style="display:none" /> <!-- メッセージ画像[3]おき場 -->
+<img id="bomb" src="bomb.png" style="display:none" /> <!-- ばくだん画像おき場 -->
+<img id="bombflag" src="bombflag.png" style="display:none" /> <!-- ばくだん数とフラグ数の画像おき場 -->
+<img id="flag" src="flag.png" style="display:none" /> <!-- フラグ画像おき場 -->
+</body>
+</html>

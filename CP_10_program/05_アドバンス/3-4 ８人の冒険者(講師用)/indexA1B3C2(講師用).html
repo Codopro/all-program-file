@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+//画像のリスト
+let yakuwaric = document.getElementsByClassName("yakuwaric") //【C1：追加】
+let sukina = document.getElementsByClassName("sukina") //【C2：追加】
+
+//ゲームの開始の時にやること
+function start() {
+    for (let i = 0; i <= 7; i++) { //【A1：以下追加】8人全員くり返す
+        if (untuyosav[i] === 0) { //うんの強さが「*」なら
+            untuyosav[i] = Math.floor(Math.random() * 2) //乱数で「*」か「**」にする
+        } else { //うんの強さが「**」か「***」なら
+            untuyosav[i] = Math.floor(Math.random() * 3) //乱数で「*」か「**」か「***」にする
+        }
+    }
+    for (let i = 0; i <= 4; i++) { //【B3：以下追加】全ての評価についてくり返す
+        oto[i] = new Audio("oto" + i + ".mp3") //効果音を読み込む
+        oto[i].preload = "auto" //音が自動で流れるようにセットする
+        oto[i].load() //効果音を読み込んでおく
+    }
+    for (let i = 0; i <= 7; i++) { //【C1：以下追加】8人全員くり返す
+        seikaku[i] = Math.floor(Math.random() * 4) //性格番号(0～3)を決定
+    }
+    for (let i = 0; i <= 7; i++) { //【C2：以下追加】8人全員くり返す
+        do {
+            sukinac[i] = Math.floor(Math.random() * 4) //キャラの好きなリーダーカード番号(0～3)を決定
+        } while(sukinaleader[sukinac[i]] === i); //好きなリーダーが自分自身ならやり直し
+    }
+    timers = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    moused = mousezahyo(canvas, evt) //マウスの座標を得る
+    if (mode === 0) { //タイトル画面？
+        mode = 1 //プレイ画面にする
+    } else if (mode === 1) { //プレイ画面？
+        leaderbutton() //リーダーボタンがクリックされたらリーダーにする
+        subleaderbutton() //リーダーボタンがクリックされたらサブリーダーにする
+        memberbutton() //メンバーボタンがクリックされたらメンバーにする
+        selectnum = charapage() //クリックされたキャラの番号を得る
+        if (selectnum > -1) { //キャラがクリックされた？
+            slidecnt = 20 //【B1:追加】キャラ画面のスライド用カウンタ
+            mode = 2 //キャラ画面にする
+        }
+        if (kettei()) { //決定した？
+            mode = 8 //確認画面にする
+        }
+    } else if (mode === 2 && slidecnt < 1) { //【B1:変更】キャラ画面＆スライド完了？
+        mode = 1 //プレイ画面に戻る
+    } else if (mode === 8) { //確認画面？
+        if (kettei()) { //決定した？
+            kekkakeisan() //結果を計算する
+            hyoukanum = kekkahyouka() //評価を決める
+            oto[hyoukanum].currentTime = 0 //【B3:追加】効果音の準備
+            oto[hyoukanum].play() //【B3:追加】効果音を流す
+            mode = 9 //結果画面にする
+        } else {
+            mode = 1 //プレイ画面に戻る
+        }
+    } else if (mode === 9) { //結果画面？
+        compkekka() //コンピュータの計算結果を得る
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (slidecnt > 0) { //【B1：以下追加】スライド中？
+        slidecnt-- //スライド用カウントダウン
+    }
+    if (mode === 9 && takaracnt < playerkei) { //【B2：以下追加】宝箱表示中？
+        takaracnt++ //宝箱表示用カウントアップ
+    }
+    draw() //画面を描く処理を呼ぶ
+}
+
+//結果を計算する
+function kekkakeisan() {
+    unplustakarabako() //運の強さの分の宝箱の数を得る
+    ptakarabako[0] = leadertakarabako() //リーダーの宝箱の数を計算
+    ptakarabako[1] = subleadertakarabako() //サブリーダーの宝箱の数を計算
+    ptakarabako[2] = membertakarabako() //メンバーの宝箱の数を計算
+    playerkei = ptakarabako[0] + ptakarabako[1] + ptakarabako[2] //プレイヤーの宝箱数合計
+    cunplustakarabako() //コンピュータ用に運の強さの分の宝箱の数を得る
+    comptakarabako() //コンピュータがベストメンバーを選んで宝箱の数を計算
+}
+
+//画面をえがく
+function draw() {
+    ctx.fillStyle = 'Yellow' //文字を黄色に
+    if (mode === 0) { //タイトル画面？
+        for (let j = 0; j < 3; j++) { //縦３行でくり返す
+            for (let i = 0; i < 3; i++) { //横３列でくり返す
+                if (i !== 1 || j !== 1) { //中央でなければ
+                    ctx.drawImage(base[0], i * 210, j * 160) //背景画像[0]を表示
+                } else {
+                    ctx.drawImage(guides[0], i * 210, j * 160) //中央はガイド画像[0]を表示
+                }
+            }
+        }
+    } else if (mode === 1) { //プレイ画面？
+        for (let j = 0; j < 3; j++) { //縦３行でくり返す
+            for (let i = 0; i < 3; i++) { //横３列でくり返す
+                if (i !== 1 || j !== 1) {
+                    drawplay(i, j) //プレイ画面をえがく
+                    drawplayun(i, j) //うんのつよさをえがく
+                } else {
+                    ctx.drawImage(guides[1], i * 210, j * 160) //中央はガイド画像[2]を表示
+                }
+            }
+        }
+    } else if (mode === 2) { //キャラ画面？
+        ctx.font = '60pt Arial' //文字サイズを指定
+        haikei9() //背景に９枚の画像を並べる
+        ctx.drawImage(chara[selectnum], 0 - 21 * slidecnt , 0 - 16 * slidecnt, 420 - 21 * slidecnt, 320 - 16 * slidecnt) //【B1:変更】キャラ画像[0～7]をスライドイン
+        if (slidecnt <= 0) { //【B1:追加】スライドイン終了？
+            ctx.fillText(powers[selectnum], 5, 65) //その上にパワーを表示
+            ctx.drawImage(unnotuyosa[untuyosav[selectnum]], 0, 320) //左下に運の強さの説明画像を表示
+            ctx.drawImage(yakuwarib[seikaku[selectnum]], 420, 0) //【C1変更】右上に役割と倍率画像[性格番号]を表示
+            ctx.drawImage(yakuwaric[seikaku[selectnum]], 420, 160) //【C1追加】右中に性格を表示
+            ctx.drawImage(guides[3], 420, 320) //左下にガイド画像[3]を表示
+            ctx.drawImage(sukina[sukinac[selectnum]], 210, 320) //【C2：追加】中下に好きなリーダー画像を表示
+        } //【B1:追加】
+    } else if (mode === 8) { //確認画面？
+        ctx.drawImage(guides[2], 210,160) //中央にガイド画像[2]を表示
+    } else if (mode === 9) { //結果画面？
+        haikei9() //背景に９枚の画像を並べる
+        kekkaguide() //結果画面にガイドを表示
+        ctx.font = '24pt Arial' //文字サイズを指定
+        drawleaderk() //結果画面にリーダの情報を表示する
+        drawsubleaderk() //結果画面にサブリーダの情報を表示する
+        drawmemberk() //結果画面にメンバーの情報を表示する
+        drawkekka(takaracnt) //【B2:変更】プレイヤーの宝箱数の合計数を画像付きで表示
+        if (takaracnt >= playerkei) { //【B2:追加】カウントアップが終わってから
+            ctx.drawImage(hyouka[hyoukanum], 420, 160) //右中に評価[評価番号]を表示
+        } //【B2:追加】
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="630" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="base" src="base0.jpg" style="display:none" /> <!-- 背景用の宝箱の画像[0]おき場 -->
+<img class="base" src="base1.jpg" style="display:none" /> <!-- 背景用の宝箱の画像[1]おき場 -->
+<img class="guides" src="guides0.png" style="display:none" /> <!-- ガイドの画像[0]おき場 -->
+<img class="guides" src="guides1.jpg" style="display:none" /> <!-- ガイドの画像[1]おき場 -->
+<img class="guides" src="guides2.jpg" style="display:none" /> <!-- ガイドの画像[2]おき場 -->
+<img class="guides" src="guides3.jpg" style="display:none" /> <!-- ガイドの画像[3]おき場 -->
+<img class="guides" src="guides4.jpg" style="display:none" /> <!-- ガイドの画像[4]おき場 -->
+<img class="guides" src="guides5.jpg" style="display:none" /> <!-- ガイドの画像[5]おき場 -->
+<img class="chara" src="char0.jpg" style="display:none" /> <!-- キャラの画像[0]おき場 -->
+<img class="chara" src="char1.jpg" style="display:none" /> <!-- キャラの画像[1]おき場 -->
+<img class="chara" src="char2.jpg" style="display:none" /> <!-- キャラの画像[2]おき場 -->
+<img class="chara" src="char3.jpg" style="display:none" /> <!-- キャラの画像[3]おき場 -->
+<img class="chara" src="char4.jpg" style="display:none" /> <!-- キャラの画像[4]おき場 -->
+<img class="chara" src="char5.jpg" style="display:none" /> <!-- キャラの画像[5]おき場 -->
+<img class="chara" src="char6.jpg" style="display:none" /> <!-- キャラの画像[6]おき場 -->
+<img class="chara" src="char7.jpg" style="display:none" /> <!-- キャラの画像[7]おき場 -->
+<img class="leader" src="leader0.png" style="display:none" /> <!-- リーダーボタンの画像[0]おき場 -->
+<img class="leader" src="leader1.png" style="display:none" /> <!-- リーダーボタンの画像[1]おき場 -->
+<img class="subleader" src="subleader0.png" style="display:none" /> <!-- サブリーダーボタンの画像[0]おき場 -->
+<img class="subleader" src="subleader1.png" style="display:none" /> <!-- サブリーダーボタンの画像[1]おき場 -->
+<img class="member" src="member0.png" style="display:none" /> <!-- メンバーボタンの画像[0]おき場 -->
+<img class="member" src="member1.png" style="display:none" /> <!-- メンバーボタンの画像[1]おき場 -->
+<img class="hyouka" src="hyouka0.jpg" style="display:none" /> <!-- 評価の画像[0]おき場 -->
+<img class="hyouka" src="hyouka1.jpg" style="display:none" /> <!-- 評価の画像[1]おき場 -->
+<img class="hyouka" src="hyouka2.jpg" style="display:none" /> <!-- 評価の画像[2]おき場 -->
+<img class="hyouka" src="hyouka3.jpg" style="display:none" /> <!-- 評価の画像[3]おき場 -->
+<img class="hyouka" src="hyouka4.jpg" style="display:none" /> <!-- 評価の画像[4]おき場 -->
+<img class="yakuwarib" src="yakuwarib0.jpg" style="display:none" /> <!-- 役割と倍率の画像[0]おき場 -->
+<img class="yakuwarib" src="yakuwarib1.jpg" style="display:none" /> <!-- 役割と倍率の画像[1]おき場 -->
+<img class="yakuwarib" src="yakuwarib2.jpg" style="display:none" /> <!-- 役割と倍率の画像[2]おき場 -->
+<img class="yakuwarib" src="yakuwarib3.jpg" style="display:none" /> <!-- 役割と倍率の画像[3]おき場 -->
+<img class="uns" src="un0.jpg" style="display:none" /> <!-- うんのつよさの画像[0]おき場 -->
+<img class="uns" src="un1.jpg" style="display:none" /> <!-- うんのつよさの画像[1]おき場 -->
+<img class="uns" src="un2.jpg" style="display:none" /> <!-- うんのつよさの画像[2]おき場 -->
+<img class="unnotuyosa" src="unnotuyosa0.jpg" style="display:none" /> <!-- うんのつよさ説明画像[0]おき場 -->
+<img class="unnotuyosa" src="unnotuyosa1.jpg" style="display:none" /> <!-- うんのつよさ説明画像[1]おき場 -->
+<img class="unnotuyosa" src="unnotuyosa2.jpg" style="display:none" /> <!-- うんのつよさ説明画像[2]おき場 -->
+<img id="takara" src="takara.gif" style="display:none" /> <!-- 宝箱の画像おき場 -->
+<img class="yakuwaric" src="yakuwaric0.jpg" style="display:none" /> <!--【C1：追加】好きな役割の画像[0]おき場 -->
+<img class="yakuwaric" src="yakuwaric1.jpg" style="display:none" /> <!--【C1：追加】好きな役割の画像[1]おき場 -->
+<img class="yakuwaric" src="yakuwaric2.jpg" style="display:none" /> <!--【C1：追加】好きな役割の画像[2]おき場 -->
+<img class="yakuwaric" src="yakuwaric3.jpg" style="display:none" /> <!--【C1：追加】好きな役割の画像[3]おき場 -->
+<img class="sukina" src="sukina0.jpg" style="display:none" /> <!--【C2：追加】好きなリーダーの画像[0]おき場 -->
+<img class="sukina" src="sukina1.jpg" style="display:none" /> <!--【C2：追加】好きなリーダーの画像[1]おき場 -->
+<img class="sukina" src="sukina2.jpg" style="display:none" /> <!--【C2：追加】好きなリーダーの画像[2]おき場 -->
+<img class="sukina" src="sukina3.jpg" style="display:none" /> <!--【C2：追加】好きなリーダーの画像[3]おき場 -->
+</body>
+</html>

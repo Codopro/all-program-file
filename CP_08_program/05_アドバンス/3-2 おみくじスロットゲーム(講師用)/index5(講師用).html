@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript">
+let back = document.getElementsByClassName("back") ;
+let kujibako = document.getElementsByClassName("kujibako") ;
+let kuji = document.getElementsByClassName("kuji") ;
+
+//固定データ（変わらないデータ）
+let window1 = { sx:640, sy:480 } //ウィンドウの横の長さと縦の長さ
+let timer = 20 //ゲームの実行タイマー(小さいと速い)
+let kujino = 7 //クジの数
+let slotno = 1 //スロットの数
+let timers //タイマー用
+let kujis = [
+    "omikuji_daikichi",
+    "omikuji_chuukichi",
+    "omikuji_syoukichi",
+    "omikuji_kichi",
+    "omikuji_suekichi",
+    "omikuji_kyou",
+    "omikuji_daikyou",
+] //クジのリスト
+let sounds = [] //効果音のリスト
+
+//作業データ（ゲームの状態によって値が変わります）
+let mode = 0 //ゲームの状態（0:タイトル画面,9:結果画面）
+let kekka = 0 //クジの結果（0:大吉 1:中吉 2:小吉 3:吉 4:末吉 5:凶 6:大凶）
+
+//最初に１回だけやること（起動処理）
+function init() {
+    ctx = document.getElementById('canvas').getContext('2d') //プログラムと画面（コンテント）をつなぐ
+    addEventListener('keydown', keyDown, true) //キーが押し終わった時にやることを示す
+    addEventListener('keyup', keyUp, true) //キーが押された時にやることを示す
+    for (let i = 0; i < kujino; i++) { //クジの全種類についてくり返す
+        sounds[i] = new Audio(kujis[i] + ".mp3") //効果音を読み込む
+        sounds[i].preload = "auto" //音が自動で流れるようにセットする
+        sounds[i].load() //効果音を読み込んでおく
+    }
+    start() //開始処理を呼ぶ
+}
+
+//ゲームの開始の時にやること（開始処理）
+function start() {
+    timers = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーが押し終わった時にやること
+function keyUp(evt) {
+}
+
+//キーが押された時にやること
+function keyDown(evt) {
+}
+
+//ゲーム中一定時間おきにやること
+function mainloop() {
+    draw() //画面を描く処理を呼ぶ
+}
+
+//画面を描く処理
+function draw() {
+    if (mode === 0) { //【追加】タイトル画面？
+        ctx.drawImage(back[0], 0, 0) //【追加】背景の画像を表示
+        ctx.drawImage(kujibako[0], 0, 0) //【追加】くじ箱[0]の画像を表示
+        for (let i = 1; i <= 6; i++) { //i=1,2,3,4,5,6についてくり返す
+            if (i <= 3) { //i=1,2,3ならば
+                ctx.drawImage(kuji[i], 210, 6 + i * 110, 50, 110) //ゲームロゴ①＝くじ[i]の画像を表示
+            } else { //でなければ
+                ctx.drawImage(kuji[i], 365, 6 + (i - 3) * 110, 50, 110) //ゲームロゴ②＝くじ[i]の画像を表示
+            }
+        }
+    } //【追加】
+}
+
+</script>
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="back" src="back.png" style="display:none" /> <!-- 背景の画像おき場 -->
+<img class="back" src="back.gif" style="display:none" /> <!-- 背景＋くじ箱の画像おき場 -->
+<img class="back" src="backdaikichi.png" style="display:none" /> <!-- 背景(大吉)の画像おき場 -->
+<img class="kujibako" src="kujibako0.gif" style="display:none;" /> <!-- くじ箱(0)の画像おき場 -->
+<img class="kujibako" src="kujibako1.gif" style="display:none;" /> <!-- くじ箱(1)の画像おき場 -->
+<img class="kujibako" src="kujibako2.gif" style="display:none;" /> <!-- くじ箱(2)の画像おき場 -->
+<img class="kujibako" src="kujibako3.gif" style="display:none;" /> <!-- くじ箱(3)の画像おき場 -->
+<img class="kuji" src="omikuji_daikichi.png" style="display:none;" /> <!-- 大吉の画像おき場 -->
+<img class="kuji" src="omikuji_chuukichi.png" style="display:none;" /> <!-- 中吉の画像おき場 -->
+<img class="kuji" src="omikuji_syoukichi.png" style="display:none;" /> <!-- 小吉の画像おき場 -->
+<img class="kuji" src="omikuji_kichi.png" style="display:none;" /> <!-- 吉の画像おき場 -->
+<img class="kuji" src="omikuji_suekichi.png" style="display:none;" /> <!-- 末吉の画像おき場 -->
+<img class="kuji" src="omikuji_kyou.png" style="display:none;" /> <!-- 凶の画像おき場 -->
+<img class="kuji" src="omikuji_daikyou.png" style="display:none;" /> <!-- 大凶の画像おき場 -->
+<img id="spacer" src="spacer.png" style="display:none;" /> <!--下じきの画像おき場 -->
+</body>
+</html>

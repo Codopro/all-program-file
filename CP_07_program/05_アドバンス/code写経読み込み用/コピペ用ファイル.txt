@@ -1,0 +1,45 @@
+¡3Í
+ctx.fillRect( )
+for ( ) {
+
+¡4Í
+ctx.fillRect( )
+if ( ) {
+} else if ( ) {
+} else {
+
+¡5Í
+if ( ) {
+mode === 0
+ctx.drawImage()
+ctx.font = '62pt Arial'
+ctx.fillStyle = 'Orange'
+ctx.fillText()
+ctx.font = '26pt Arial'
+
+¡6Í
+if ( ) {
+evt.keyCode == 13
+ctx.drawImage()
+
+¡7Í
+} else if ( ) {
+if ( ) {
+evt.keyCode == 
+ctx.drawImage()
+
+¡8Í
+for ( ) {
+if ( ) {
+ctx.drawImage()
+
+¡9Í
+if ( ) {
+ctx.drawImage()
+ctx.font = '90pt Arial'
+ctx.fillStyle = 'Red'
+ctx.fillText()
+ctx.font = '26pt Arial'
+
+¡10Í
+i©•ª‚Å‘‚¢‚Ä‚İ‚æ‚¤j

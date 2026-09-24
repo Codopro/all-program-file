@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+function start() {
+    timers = setInterval(mainloop, timer)
+}
+
+function onclick_canvas(evt) {
+    moused = mousezahyo(canvas, evt)
+}
+
+function mainloop() {
+    draw()
+}
+
+function draw() {
+    ctx.fillStyle = 'Yellow'
+    for (let j = 0; j < 3; j++) {
+        for (let i = 0; i < 3; i++) {
+            if (i !== 1 || j !== 1) {
+                ctx.drawImage(base[0], i * 210, j * 160)
+            }
+        }
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="630" height="480" /></canvas>
+<img class="base" src="base0.jpg" style="display:none" />
+<img class="base" src="base1.jpg" style="display:none" />
+<img class="guides" src="guides0.png" style="display:none" />
+<img class="guides" src="guides1.jpg" style="display:none" />
+<img class="guides" src="guides2.jpg" style="display:none" />
+<img class="guides" src="guides3.jpg" style="display:none" />
+<img class="guides" src="guides4.jpg" style="display:none" />
+<img class="guides" src="guides5.jpg" style="display:none" />
+<img class="chara" src="char0.jpg" style="display:none" />
+<img class="chara" src="char1.jpg" style="display:none" />
+<img class="chara" src="char2.jpg" style="display:none" />
+<img class="chara" src="char3.jpg" style="display:none" />
+<img class="chara" src="char4.jpg" style="display:none" />
+<img class="chara" src="char5.jpg" style="display:none" />
+<img class="chara" src="char6.jpg" style="display:none" />
+<img class="chara" src="char7.jpg" style="display:none" />
+<img class="leader" src="leader0.png" style="display:none" />
+<img class="leader" src="leader1.png" style="display:none" />
+<img class="subleader" src="subleader0.png" style="display:none" />
+<img class="subleader" src="subleader1.png" style="display:none" />
+<img class="member" src="member0.png" style="display:none" />
+<img class="member" src="member1.png" style="display:none" />
+<img class="hyouka" src="hyouka0.jpg" style="display:none" />
+<img class="hyouka" src="hyouka1.jpg" style="display:none" />
+<img class="hyouka" src="hyouka2.jpg" style="display:none" />
+<img class="hyouka" src="hyouka3.jpg" style="display:none" />
+<img class="hyouka" src="hyouka4.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib0.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib1.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib2.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib3.jpg" style="display:none" />
+<img class="uns" src="un0.jpg" style="display:none" />
+<img class="uns" src="un1.jpg" style="display:none" />
+<img class="uns" src="un2.jpg" style="display:none" />
+<img class="unnotuyosa" src="unnotuyosa0.jpg" style="display:none" />
+<img class="unnotuyosa" src="unnotuyosa1.jpg" style="display:none" />
+<img class="unnotuyosa" src="unnotuyosa2.jpg" style="display:none" />
+<img id="takara" src="takara.gif" style="display:none" />
+</body>
+</html>

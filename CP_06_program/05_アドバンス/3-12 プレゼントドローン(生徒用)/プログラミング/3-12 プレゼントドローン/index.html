@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+//ゲームの開始の時にやること
+function start() {
+
+    timerno = setInterval(mainloop, timer)
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+}
+
+//一定時間おきにやること
+function mainloop() {
+
+    draw()
+}
+
+//プレイ画面でモードに共通するものをえがく
+function drawfield() {
+}
+
+//画面をえがく
+function draw() {
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="box" src="box0.gif" style="display:none" /> <!-- 箱画像[0]おき場 -->
+<img class="box" src="box1.gif" style="display:none" /> <!-- 箱画像[1]おき場 -->
+<img class="box" src="box2.gif" style="display:none" /> <!-- 箱画像[2]おき場 -->
+<img class="haikei" src="haikei0.png" style="display:none" /> <!-- はいけい画像[0]おき場 -->
+<img class="haikei" src="haikei1.png" style="display:none" /> <!-- はいけい画像[1]おき場 -->
+<img id="drone" src="drone.gif" style="display:none" /> <!-- ドローン画像おき場 -->
+<img id="target0" src="target0.gif" style="display:none" /> <!-- 配達先画像おき場 -->
+<img class="msg" src="msg0.png" style="display:none" /> <!-- メッセージ画像[0]おき場 -->
+<img class="msg" src="msg1.png" style="display:none" /> <!-- メッセージ画像[1]おき場 -->
+</body>
+</html>

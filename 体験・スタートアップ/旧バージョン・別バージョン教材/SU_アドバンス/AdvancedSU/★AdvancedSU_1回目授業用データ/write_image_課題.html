@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript">
+
+let timerv = 250
+let timer = timerv
+
+function init() {
+    canvas = document.getElementById('canvas')
+    ctx = canvas.getContext('2d')
+    addEventListener('keydown', keyDown, true)
+    addEventListener('keyup', keyUp, true)
+
+    start() //開始処理を呼ぶ
+}
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+
+}
+
+//一定時間おきにやること
+function mainloop() {
+    draw()
+}
+
+//画面をえがく
+function draw() {
+}
+
+</script>
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="haikei" src="背景.png" style="display:none" /> <!-- 画像おき場 -->
+<img id="gu" src="janken_gu.png" style="display:none" /> <!-- 画像おき場 -->
+<img id="choki" src="janken_choki.png" style="display:none" /> <!-- 画像おき場 -->
+<img id="pa" src="janken_pa.png" style="display:none" /> <!-- 画像おき場 -->
+</body>
+</html>

@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//【10.のこりタイムとタイムアップを表示しよう】
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//クリックされた時にやること
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) //マウスの座標を得る
+    if (mode === 0) { //タイトルモードならば
+        if (onstart(mouse.x, mouse.y)) { //スタートボタン？
+            mode = 5 //通常プレイモードにする
+        }
+    }
+}
+
+//マウスが動いた時にやること
+function onmove_canvas(evt) {
+    if (mode === 5) { //通常プレイモードならば
+        mouse = mousezahyo(canvas, evt) //マウスの座標を得る
+        hamsize = hammersize(mouse.y) //マウスのY座標を元にハンマーの大きさを決める
+        hammerx = mouse.x - hamsize / 2 //ハンマーのX座標はマウスのX座標－ハンマーの大きさ÷２
+        hammery = mouse.y - hamsize / 2 //ハンマーのY座標はマウスのY座標－ハンマーの大きさ÷２
+    }
+}
+
+//マウスボタンが押された時にやること
+function ondown_canvas(evt) {
+    if (mode === 5) { //通常プレイモードならば
+        hammers = 1 //ハンマーをダウンにする
+        if (itachis[itachino] === 1 && hammeritachi(itachino)) { //いたちがいてハンマーが当たっていたら
+            itachis[itachino] = 4 //当たりにする
+            itachicount = itachicounti / 2 //いたち出現カウントの半分だけ時間をとる
+        }
+    }
+}
+
+//マウスボタンがはなされた時にやること
+function onup_canvas(evt) {
+    if (mode === 5) { //通常プレイモードならば
+        hammers = 0 //ハンマーをアップにする
+    }
+}
+
+//一定時間おきにやること
+function mainloop() {
+    if (mode === 5) { //通常プレイモードならば
+        gametimer = gametimer - 0.05 //【追加】ゲームタイマーをカウントダウン
+        if (gametimer <= 0.0) { //【以下追加】ゲームタイマーがゼロになったら
+            mode = 9 //タイムアップモードにする
+            return //ループを抜ける
+        }
+        if (itachiwait > 0) { //いたちの出現待ち？
+            itachiwait-- //いたちの出現待ちカウントダウン
+        } else { //いたち出現OK？
+            if (itachicount <= 0) { //いたちがまだ出現していない？
+                itachicount = itachicounti //いたち出現カウントセット
+                itachino = getitachino() //出現するいたちを決める
+                itachis[itachino] = 1 //決まったいたちを出現させる
+            } else { //いたち出現中？
+                itachicount-- //いたち出現カウントをカウントダウン
+                if (itachicount <= 0) { //出現カウントがゼロ以下？
+                    itachis[itachino] = 0 //出現中のいたちを消す
+                    itachiwait = getitachiwait() //いたち出現待ちカウントセット
+                }
+            }
+        }
+    }
+    draw() //画面をえがく処理を呼ぶ
+}
+
+//はいけい・タイマー・スコアをえがく
+function drawitem() {
+    ctx.drawImage(play, 0, 0) //プレイはいけいを表示
+    drawtimer(gametimer) //【追加】ゲームタイマーを表示
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //タイトルモードなら
+        ctx.drawImage(title, 0, 0) //タイトル画像を表示
+        for (let i = 3; i <= 8; i++) { //iを3から8までくり返す
+            if (i !== 7) { //7番をのぞいて
+                drawitachi(i) //いたち画像[i]番を表示
+            } else { //7番ならば
+                drawitachig(i) //ゴールドいたち画像[i]番を表示
+            }
+        }
+    } else if (mode === 5) { //通常プレイモードならば
+        drawitem() //はいけい・タイマー・スコアをえがく
+        if (itachis[itachino] > 0) { //いたち出現中？
+            drawitachi(itachino) //出現中のいたちの画像を表示
+            if (itachis[itachino] === 4) { //当たり？
+                drawatari(itachino) //当たり画像を表示
+            }
+        }
+        ctx.drawImage(hammer[hammers], hammerx, hammery, hamsize, hamsize) //ハンマーを表示
+    } else if (mode === 9) { //【以下追加】タイムアップモードならば
+        drawitem() //はいけい・スコアをえがく
+        ctx.drawImage(timeup, 60, 180) //中央に「TIME UP」を表示
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="play" src="play.png" style="display:none" /> <!-- プレイはいけい画像おき場 -->
+<img class="hammer" src="hammer0.gif" style="display:none" /> <!-- ハンマー画像[0]おき場 -->
+<img class="hammer" src="hammer1.gif" style="display:none" /> <!-- ハンマー画像[1]おき場 -->
+<img id="itachi" src="itachi.gif" style="display:none" /> <!-- いたち画像おき場 -->
+<img id="itachig" src="itachig.gif" style="display:none" /> <!-- ゴールドいたち画像おき場 -->
+<img id="atari" src="atari.gif" style="display:none" /> <!-- 当たり画像おき場 -->
+<img id="timeup" src="timeup.gif" style="display:none" /> <!-- タイムアップ画像おき場 -->
+</body>
+</html>

@@ -1,0 +1,43 @@
+¡3Í
+ctx.drawImage()
+for( )
+
+¡4Í
+for( )
+if( )
+
+¡5Í
+ctx.drawImage()
+ctx.font = '72pt Arial'
+ctx.fillStyle = 'Orange'
+ctx.fillText()
+ctx.font = '26pt Arial'
+
+¡6Í
+if( )
+else if( )
+ctx.drawImage()
+
+¡7Í
+Math.floor()
+ctx.drawImage()
+
+¡8Í
+ctx.drawImage()
+
+¡9Í
+for( )
+
+¡10Í
+ctx.font = '72pt Arial'
+ctx.fillStyle = 'Red'
+ctx.fillText()
+ctx.font = '30pt Arial'
+ctx.drawImage()
+
+¡11Í
+i©•ª‚Åì‚Á‚Ä‚İ‚æ‚¤j
+
+¡12Í
+ctx.drawImage()
+ctx.fillText()

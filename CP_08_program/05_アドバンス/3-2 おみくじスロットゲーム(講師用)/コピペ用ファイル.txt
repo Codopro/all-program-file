@@ -1,0 +1,34 @@
+¡3Í
+ctx.drawImage()
+for ( ) {
+
+¡4Í
+ctx.drawImage()
+if ( ) {
+} else {
+
+¡5Í
+if ( ) {
+mode === 0
+ctx.drawImage()
+
+¡6Í
+if ( ) {
+evt.keyCode === 13
+ctx.drawImage()
+
+¡7Í
+parseInt()
+Math.random()
+ctx.drawImage()
+
+¡8Í
+ctx.drawImage()
+
+¡9Í
+if ( ) {
+evt.keyCode === 
+
+¡10Í`12Í
+i©•ª‚Å‘‚¢‚Ä‚İ‚æ‚¤j
+

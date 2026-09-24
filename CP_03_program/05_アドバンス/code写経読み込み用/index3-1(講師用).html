@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+
+
+function start() {
+    timerno = setInterval(mainloop, timer) 
+}
+
+
+function keyUp(evt) {
+}
+
+
+function keyDown(evt) {
+}
+
+
+function mainloop() {
+    draw() 
+}
+
+
+function drawfield() {
+}
+
+
+function draw() {
+    ctx.drawImage(slimeb[0], 218,  16) }
+</script>
+
+</head>
+<body onload="init();"> 
+<canvas id="canvas" width="640" height="480" /></canvas> 
+<img id="title" src="title.png" style="display:none" /> 
+<img id="haikei" src="haikei.png" style="display:none" /> 
+<img class="slimeb" src="slimeb0.png" style="display:none" /> 
+<img class="slimeb" src="slimeb1.png" style="display:none" /> 
+<img class="slimeb" src="slimeb2.png" style="display:none" /> 
+<img class="slimeb" src="slimeb3.png" style="display:none" /> 
+<img class="slimeb" src="slimeb4.png" style="display:none" /> 
+<img class="slimeb" src="slimeb5.png" style="display:none" /> 
+<img class="slime" src="slime0.gif" style="display:none" /> 
+<img class="slime" src="slime1.gif" style="display:none" /> 
+<img class="slime" src="slime2.gif" style="display:none" /> 
+<img class="slime" src="slime3.gif" style="display:none" /> 
+<img class="slime" src="slime4.gif" style="display:none" /> 
+<img class="slime" src="slime5.gif" style="display:none" /> 
+<img id="stage" src="stage.png" style="display:none" /> 
+<img id="msg" src="msg.png" style="display:none" /> 
+<img id="shine" src="shine.gif" style="display:none" /> 
+<img id="rensaboard" src="rensaboard.png" style="display:none" /> 
+<img id="pointboard" src="pointboard.png" style="display:none" /> 
+<img id="scoreboard" src="scoreboard.png" style="display:none" /> 
+</body>
+</html>

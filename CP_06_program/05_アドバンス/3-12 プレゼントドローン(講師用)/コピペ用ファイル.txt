@@ -1,0 +1,39 @@
+¡3Í
+drawbox()
+for( ) {
+
+¡4Í
+if( ) {
+else {
+drawbox()
+
+¡5Í
+if( ) {
+ctx.drawImage()
+else if( ) {
+
+¡6Í
+if( ) {
+ctx.drawImage()
+
+¡7Í
+if( ) {
+
+¡8Í
+Math.floor()
+for( ) {
+if( ) {
+
+¡9Í
+else if( ) {
+for( ) {
+if( ) {
+ctx.drawImage()
+
+¡10Í
+if( ) {
+for( ) {
+
+¡11Í
+if( ) {
+else if( ) {

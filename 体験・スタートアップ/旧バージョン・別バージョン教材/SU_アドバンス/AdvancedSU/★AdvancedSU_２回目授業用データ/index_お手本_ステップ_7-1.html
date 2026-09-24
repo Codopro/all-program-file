@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="janken_parts.js"></script>
+<script type="text/javascript">
+      
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer)
+}
+      
+//キーをおし終えた時にやること
+function keyUp(evt) {
+    if (mode === 0) {
+        if (evt.keyCode === 13) {
+            mode = 5
+        }
+    }
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+}
+      
+//一定時間おきにやること
+function mainloop() {
+    draw()
+}
+
+//プレイ画面でモードに共通するものをえがく
+function drawfield() {
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(haikei, 0, 0, 640, 480)
+        for (let i = 0; i < 3; i++) {
+            ctx.drawImage(gu, 150, 100 + 120 * i, 100, 100)
+            if (i === 1) {
+                ctx.drawImage(choki, 250, 100 + 120 * i, 100, 100)
+            }
+            ctx.drawImage(pa,    350, 100 + 120 * i, 100, 100) 
+        }
+        ctx.fillStyle = 'blue'
+        ctx.font = '50pt ＭＳ ゴシック'
+        ctx.fillText('ジャンケンゲーム！', 50, 80)
+        ctx.font = '25pt ＭＳ ゴシック'
+        ctx.fillText('エンターキーを押してね！', 100, 450)
+    }
+}
+
+</script>
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="haikei" src="haikei.png" style="display:none" /> <!-- 背景画像おき場 -->
+<img id="you_win" src="you_win.png" style="display:none" /> <!-- 勝利画像おき場 -->
+<img id="you_lose" src="you_lose.png" style="display:none" /> <!-- 敗戦画像おき場 -->
+<img id="gu" src="janken_gu.png" style="display:none" /> <!-- グー画像おき場 -->
+<img id="choki" src="janken_choki.png" style="display:none" /> <!-- チョキ画像おき場 -->
+<img id="pa" src="janken_pa.png" style="display:none" /> <!-- パー画像おき場 -->
+<img id="janken_key" src="janken_key.png" style="display:none" /> <!-- キー画像おき場 -->
+<img class="janken" src="janken_gu.png" style="display:none" /> <!-- グー画像おき場 -->
+<img class="janken" src="janken_choki.png" style="display:none" /> <!-- チョキ画像おき場 -->
+<img class="janken" src="janken_pa.png" style="display:none" /> <!-- パー画像おき場 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+</body>
+</html>

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript">
+let back = document.getElementsByClassName("back") ;
+let kujibako = document.getElementsByClassName("kujibako") ;
+let kuji = document.getElementsByClassName("kuji") ;
+
+let window1 = { sx:640, sy:480 }
+let timer = 20
+let kujino = 7
+let slotno = 1
+let timers
+let kujis = [
+    "omikuji_daikichi",
+    "omikuji_chuukichi",
+    "omikuji_syoukichi",
+    "omikuji_kichi",
+    "omikuji_suekichi",
+    "omikuji_kyou",
+    "omikuji_daikyou",
+]
+let sounds = []
+
+let mode = 0
+let kekka = 0
+
+function init() {
+    ctx = document.getElementById('canvas').getContext('2d')
+    addEventListener('keydown', keyDown, true)
+    addEventListener('keyup', keyUp, true)
+    for (let i = 0; i < kujino; i++) {
+        sounds[i] = new Audio(kujis[i] + ".mp3")
+        sounds[i].preload = "auto"
+        sounds[i].load()
+    }
+    start()
+}
+
+function start() {
+    timers = setInterval(mainloop, timer)
+}
+
+function keyUp(evt) {
+    if (mode === 0) {
+        if (evt.keyCode === 13) {
+            kekka = Math.floor(Math.random() * kujino)
+            mode = 9
+        }
+    }
+}
+
+function keyDown(evt) {
+}
+
+function mainloop() {
+    draw()
+}
+
+function draw() {
+    if (mode === 0) {
+        ctx.drawImage(back[0], 0, 0)
+        ctx.drawImage(kujibako[0], 0, 0)
+        for (let i = 1; i <= 6; i++) {
+            if (i <= 3) {
+                ctx.drawImage(kuji[i], 210, 6 + i * 110, 50, 110)
+            } else {
+                ctx.drawImage(kuji[i], 365, 6 + (i - 3) * 110, 50, 110)
+            }
+        }
+    } else if (mode === 9) {
+        ctx.drawImage(back[0], 0, 0)
+        ctx.drawImage(kujibako[3], 0, 0)
+        ctx.drawImage(kuji[kekka], 225, 116, 110, 230)
+    }
+}
+
+</script>
+</head>
+<body onload="init();">
+<canvas id="canvas" width="640" height="480" /></canvas>
+<img class="back" src="back.png" style="display:none" />
+<img class="back" src="back.gif" style="display:none" />
+<img class="back" src="backdaikichi.png" style="display:none" />
+<img class="kujibako" src="kujibako0.gif" style="display:none;" />
+<img class="kujibako" src="kujibako1.gif" style="display:none;" />
+<img class="kujibako" src="kujibako2.gif" style="display:none;" />
+<img class="kujibako" src="kujibako3.gif" style="display:none;" />
+<img class="kuji" src="omikuji_daikichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_chuukichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_syoukichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_kichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_suekichi.png" style="display:none;" />
+<img class="kuji" src="omikuji_kyou.png" style="display:none;" />
+<img class="kuji" src="omikuji_daikyou.png" style="display:none;" />
+<img id="spacer" src="spacer.png" style="display:none;" />
+</body>
+</html>

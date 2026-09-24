@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+
+
+function start() {
+    for (let i = 0; i < 3; i++) { 
+        oto[i] = new Audio("oto" + i + ".mp3") 
+        oto[i].preload = "auto" 
+        oto[i].load() 
+    }
+    timerno = setInterval(mainloop, timer) 
+}
+
+
+function onclick_canvas(evt) {
+    mouse = mousezahyo(canvas, evt) 
+    if (mode === 0) { 
+        oto[0].currentTime = 0 
+        oto[0].play() 
+        setmap() 
+        setbomb(bombs) 
+        setbombs(bombs) 
+        mode = 5 
+    } else if (mode === 5) { 
+        let mapxy = getmousemap(mouse) 
+        if (mapxy.x >= 0 && vmap[mapxy.x][mapxy.y] === -2) { 
+            if (isflag(mouse)) { 
+                vmap[mapxy.x][mapxy.y] = 8 
+                flags = flags + 1 
+            } else { 
+                vmap[mapxy.x][mapxy.y] = map[mapxy.x][mapxy.y] 
+                boxs = boxs - 1 
+                if (map[mapxy.x][mapxy.y] === 9) { 
+                    oto[2].currentTime = 0 
+                    oto[2].play() 
+                    for (let i = 0; i < cols; i++) { 
+                        for (let j = 0; j < cols; j++) { 
+                            vmap[i][j] = map[i][j] 
+                        }
+                    }
+                    mode = 9 
+                } else if (bombs === boxs) {                     
+                    oto[1].currentTime = 0 
+                    oto[1].play() 
+                    if (cols === maxcols) { 
+                        mode = 8 
+                    } else { 
+                        mode = 7 
+                    }
+                }
+            }
+        } else if (mapxy.x >= 0 && vmap[mapxy.x][mapxy.y] === 8) { 
+            vmap[mapxy.x][mapxy.y] = -2 
+            flags = flags - 1 
+        }
+    } else if (mode > 5) { 
+        let levelup = false 
+        if (mode === 7 && isnext(mouse)) { 
+            if (cols < maxcols) { 
+                cols = cols + 1 
+                bombs = cols - 2 
+                boxsize = (window1.sy - fuchi * 2) / cols 
+                levelup = true 
+            }
+        }
+        if (levelup || isagain(mouse)) { 
+            setmap() 
+            setbomb(bombs) 
+            setbombs(bombs) 
+            boxs = cols * cols 
+            flags = 0 
+            mode = 5 
+        }
+    }
+}
+
+
+function mainloop() {
+
+    draw() 
+}
+
+
+function drawitem() {
+    for (let i = 0; i < cols; i++) { 
+        for (let j = 0; j < cols; j++) { 
+            drawbox(i, j, vmap[i][j]) 
+        }
+    }
+    ctx.drawImage(title, 490, 33, 120, 120) 
+    ctx.drawImage(bombflag, 490, 180, 120, 120) 
+    drawbombs(bombs) 
+    drawflags(flags) 
+}
+
+
+function draw() {
+    if (mode === 0) { 
+        for (let i = 0; i < 3; i++) { 
+            for (let j = 0; j < 3; j++) { 
+                if (i + j <= 1) { 
+                    ctx.drawImage(box, 160 * i, 160 * j, 160, 160) 
+                } else if (i === 1 && j === 1) { 
+                    ctx.drawImage(titlebox, 160 * i, 160 * j, 160, 160) 
+                } else { 
+                    ctx.drawImage(bomb, 160 * i, 160 * j, 160, 160) 
+                }
+            }
+        }
+    } else if (mode === 5) { 
+        ctx.drawImage(haikei[0], 0, 0) 
+        drawitem() 
+        ctx.drawImage(msg[0], 490, 325, 120, 120) 
+    } else if (mode === 7) { 
+        ctx.drawImage(haikei[2], 0, 0) 
+        drawitem() 
+        ctx.drawImage(msg[3], 490, 325, 120, 120) 
+    } else if (mode === 8) { 
+        ctx.drawImage(haikei[2], 0, 0) 
+        drawitem() 
+        ctx.drawImage(msg[2], 490, 325, 120, 120) 
+    } else if (mode === 9) {         ctx.drawImage(haikei[1], 0, 0) 
+        drawitem() 
+        ctx.drawImage(msg[1], 490, 325, 120, 120) 
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> 
+<canvas id="canvas" width="640" height="480" /></canvas> 
+<img id="title" src="title.png" style="display:none" /> 
+<img id="titlebox" src="titlebox.png" style="display:none" /> 
+<img id="box" src="fbox.png" style="display:none" /> 
+<img class="haikei" src="haikei0.png" style="display:none" /> 
+<img class="haikei" src="haikei1.png" style="display:none" /> 
+<img class="haikei" src="haikei2.png" style="display:none" /> 
+<img class="num" src="num0.png" style="display:none" /> 
+<img class="num" src="num1.png" style="display:none" /> 
+<img class="num" src="num2.png" style="display:none" /> 
+<img class="num" src="num3.png" style="display:none" /> 
+<img class="num" src="num4.png" style="display:none" /> 
+<img class="num" src="num5.png" style="display:none" /> 
+<img class="num" src="num6.png" style="display:none" /> 
+<img class="num" src="num7.png" style="display:none" /> 
+<img id="empty" src="empty.png" style="display:none" /> 
+<img class="msg" src="msg0.png" style="display:none" /> 
+<img class="msg" src="msg1.png" style="display:none" /> 
+<img class="msg" src="msg2.png" style="display:none" /> 
+<img class="msg" src="msg3.png" style="display:none" /> 
+<img id="bomb" src="bomb.png" style="display:none" /> 
+<img id="bombflag" src="bombflag.png" style="display:none" /> 
+<img id="flag" src="flag.png" style="display:none" /> </body>
+</html>

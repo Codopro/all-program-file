@@ -1,0 +1,37 @@
+¡3Í
+ctx.drawImage()
+for( ) {
+
+¡4Í
+if( ) {
+else {
+
+¡5Í
+if( ) {
+ctx.drawImage()
+} else if ( ) {
+
+¡6Í
+if( ) {
+else if ( ) {
+
+¡7Í
+} else if( ) {
+
+¡8Í
+if( ) {
+else {
+
+¡9Í
+} else if( ) {
+
+
+¡10Í
+} else if( ) {
+if( ) {
+else {
+Math.random()
+
+¡11Í
+if( ) {
+else if () {

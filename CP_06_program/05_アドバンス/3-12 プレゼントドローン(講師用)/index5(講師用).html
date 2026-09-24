@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//5.スタート画面を仕上げてプレイ画面を表示しよう
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+    if (mode === 0 && evt.keyCode === 13) { //【以下追加】タイトルモードでEnterキーがおされたら
+        mode = 5 //プレイモードにする
+    }
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+}
+
+//一定時間おきにやること
+function mainloop() {
+
+    draw() //画面をえがく
+}
+
+//プレイ画面でモードに共通するものをえがく
+function drawfield() {
+    ctx.drawImage(haikei[1], 0, haikeiy) //【追加】はいけい画像[1]を表示
+    drawdrone(dronexy.x, dronexy.y) //【追加】ドローンを表示
+}
+
+//画面をえがく
+function draw() {
+    if (mode === 0) { //【追加】タイトルモードなら
+        ctx.drawImage(haikei[0], 0, 0) //【追加】はいけい画像[0]を表示
+        for (let j = 0; j < 4; j++) { //箱4個分くり返す
+            for (let i = 0; i < 3; i++) { //箱3種類分くり返す
+                if (i < 2) { //箱[0]、箱[1]ならば
+                    drawbox(i, 556 * i + 42, 60 * j + 42, 1 - j * 0.2) //箱画像を位置と大きさを変えながら左上・右上に表示
+                } else { //でなければ（箱[2]ならば）
+                    drawbox(i, 42, -60 * j + 438, 1 - j * 0.2) //箱画像を位置と大きさを変えながら左下に表示
+                }
+            }
+        }
+        drawdrone(566, 406) //【追加】ドローンを右下に表示
+    } else if (mode === 5) { //【以下追加】プレイモードならば
+        drawfield() //プレイ画面でモードに共通するものをえがく
+    }
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img class="box" src="box0.gif" style="display:none" /> <!-- 箱画像[0]おき場 -->
+<img class="box" src="box1.gif" style="display:none" /> <!-- 箱画像[1]おき場 -->
+<img class="box" src="box2.gif" style="display:none" /> <!-- 箱画像[2]おき場 -->
+<img class="haikei" src="haikei0.png" style="display:none" /> <!-- はいけい画像[0]おき場 -->
+<img class="haikei" src="haikei1.png" style="display:none" /> <!-- はいけい画像[1]おき場 -->
+<img id="drone" src="drone.gif" style="display:none" /> <!-- ドローン画像おき場 -->
+<img id="target0" src="target0.gif" style="display:none" /> <!-- 配達先画像おき場 -->
+<img class="msg" src="msg0.png" style="display:none" /> <!-- メッセージ画像[0]おき場 -->
+<img class="msg" src="msg1.png" style="display:none" /> <!-- メッセージ画像[1]おき場 -->
+</body>
+</html>

@@ -1,0 +1,39 @@
+¡3Í
+ctx.drawImage()
+for( ) {
+
+¡4Í
+for( ) {
+if( ) {
+
+¡5Í
+if( ) {
+ctx.drawImage()
+} else if ( ) {
+
+¡6Í
+} else if( ) {
+if( ) {
+for( ) {
+ctx.drawImage()
+
+¡7Í
+if( ) {
+} else if( ) {
+
+¡8Í
+if( ) {
+ctx.drawImage()
+
+¡9Í
+if( ) {
+} else if( ) {
+
+
+¡10Í
+} else if( ) {
+if( ) {
+ctx.drawImage()
+
+} else {
+function kekkakeisan() {

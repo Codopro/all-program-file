@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+//3.タイトル画面を作ろう①
+
+//ゲームの開始の時にやること
+function start() {
+    timerno = setInterval(mainloop, timer) //タイマーを起動する
+}
+
+//キーをおし終えた時にやること
+function keyUp(evt) {
+}
+
+//キーがおされた時にやること
+function keyDown(evt) {
+}
+
+//一定時間おきにやること
+function mainloop() {
+    draw() //画面をえがく
+}
+
+//はいけい、ステージ、タイトルなどをえがく
+function drawfield() {
+}
+
+//画面をえがく
+function draw() {
+    for (let i = 0; i < 2; i++) { //２回くり返す
+	    ctx.drawImage(slimeb[i], 218, 68 * i + 16) //スライム画像タイトル用[i]を表示
+	}
+}
+</script>
+
+</head>
+<body onload="init();"> <!-- 最初に１回だけやること（起動処理）を示す -->
+<canvas id="canvas" width="640" height="480" /></canvas> <!-- キャンバスの設置 -->
+<img id="title" src="title.png" style="display:none" /> <!-- タイトル画像おき場 -->
+<img id="haikei" src="haikei.png" style="display:none" /> <!-- はいけい画像おき場 -->
+<img class="slimeb" src="slimeb0.png" style="display:none" /> <!-- スライム画像タイトル用[0]おき場 -->
+<img class="slimeb" src="slimeb1.png" style="display:none" /> <!-- スライム画像タイトル用[1]おき場 -->
+<img class="slimeb" src="slimeb2.png" style="display:none" /> <!-- スライム画像タイトル用[2]おき場 -->
+<img class="slimeb" src="slimeb3.png" style="display:none" /> <!-- スライム画像タイトル用[3]おき場 -->
+<img class="slimeb" src="slimeb4.png" style="display:none" /> <!-- スライム画像タイトル用[4]おき場 -->
+<img class="slimeb" src="slimeb5.png" style="display:none" /> <!-- スライム画像タイトル用[5]おき場 -->
+<img class="slime" src="slime0.gif" style="display:none" /> <!-- スライム画像[0]おき場 -->
+<img class="slime" src="slime1.gif" style="display:none" /> <!-- スライム画像[1]おき場 -->
+<img class="slime" src="slime2.gif" style="display:none" /> <!-- スライム画像[2]おき場 -->
+<img class="slime" src="slime3.gif" style="display:none" /> <!-- スライム画像[3]おき場 -->
+<img class="slime" src="slime4.gif" style="display:none" /> <!-- スライム画像[4]おき場 -->
+<img class="slime" src="slime5.gif" style="display:none" /> <!-- スライム画像[5]おき場 -->
+<img id="stage" src="stage.png" style="display:none" /> <!-- ステージ画像おき場 -->
+<img id="msg" src="msg.png" style="display:none" /> <!-- メッセージボード画像おき場 -->
+<img id="shine" src="shine.gif" style="display:none" /> <!-- スライムの背景の光画像おき場 -->
+<img id="rensaboard" src="rensaboard.png" style="display:none" /> <!-- れんさ数ボード画像おき場 -->
+<img id="pointboard" src="pointboard.png" style="display:none" /> <!-- ポイントボード画像おき場 -->
+<img id="scoreboard" src="scoreboard.png" style="display:none" /> <!-- スコアボード画像おき場 -->
+</body>
+</html>

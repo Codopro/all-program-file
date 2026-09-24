@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="parts.js"></script>
+<script type="text/javascript">
+
+function start() {
+    for (let i = 0; i <= 7; i++) {
+        if (untuyosav[i] === 0) {
+            untuyosav[i] = Math.floor(Math.random() * 2)
+        } else {
+            untuyosav[i] = Math.floor(Math.random() * 3)
+        }
+    }
+    timers = setInterval(mainloop, timer)
+}
+
+function onclick_canvas(evt) {
+    moused = mousezahyo(canvas, evt)
+    if (mode === 0) {
+        mode = 1
+    } else if (mode === 1) {
+        leaderbutton()
+        subleaderbutton()
+        memberbutton()
+        selectnum = charapage()
+        if (selectnum > -1) {
+            mode = 2
+        }
+        if (kettei()) {
+            mode = 8
+        }
+    } else if (mode === 2) {
+        mode = 1
+    } else if (mode === 8) {
+        if (kettei()) {
+            kekkakeisan()
+            hyoukanum = kekkahyouka()
+            mode = 9
+        } else {
+            mode = 1
+        }
+    } else if (mode === 9) {
+        compkekka()
+    }
+}
+
+function mainloop() {
+    draw()
+}
+
+function kekkakeisan() {
+    unplustakarabako()
+    ptakarabako[0] = leadertakarabako()
+    ptakarabako[1] = subleadertakarabako()
+    ptakarabako[2] = membertakarabako()
+    playerkei = ptakarabako[0] + ptakarabako[1] + ptakarabako[2]
+    cunplustakarabako()
+    comptakarabako()
+}
+
+function draw() {
+    ctx.fillStyle = 'Yellow'
+    if (mode === 0) {
+        for (let j = 0; j < 3; j++) {
+            for (let i = 0; i < 3; i++) {
+                if (i !== 1 || j !== 1) {
+                    ctx.drawImage(base[0], i * 210, j * 160)
+                } else {
+                    ctx.drawImage(guides[0], i * 210, j * 160)
+                }
+            }
+        }
+    } else if (mode === 1) {
+        for (let j = 0; j < 3; j++) {
+            for (let i = 0; i < 3; i++) {
+                if (i !== 1 || j !== 1) {
+                    drawplay(i, j)
+                    drawplayun(i, j)
+                } else {
+                    ctx.drawImage(guides[1], i * 210, j * 160)
+                }
+            }
+        }
+    } else if (mode === 2) {
+        ctx.font = '60pt Arial'
+        haikei9()
+        ctx.drawImage(chara[selectnum], 0, 0, 420, 320)
+        ctx.fillText(powers[selectnum], 5, 65)
+        ctx.drawImage(unnotuyosa[untuyosav[selectnum]], 0, 320)
+        ctx.drawImage(yakuwarib[0], 420, 0)
+        ctx.drawImage(guides[3], 420, 320)
+    } else if (mode === 8) {
+        ctx.drawImage(guides[2], 210,160)
+    } else if (mode === 9) {
+        haikei9()
+        kekkaguide()
+        ctx.font = '24pt Arial'
+        drawleaderk()
+        drawsubleaderk()
+        drawmemberk()
+        drawkekka(playerkei)
+        ctx.drawImage(hyouka[hyoukanum], 420, 160)
+    }
+}
+</script>
+
+</head>
+<body onload="init();">
+<canvas id="canvas" width="630" height="480" /></canvas>
+<img class="base" src="base0.jpg" style="display:none" />
+<img class="base" src="base1.jpg" style="display:none" />
+<img class="guides" src="guides0.png" style="display:none" />
+<img class="guides" src="guides1.jpg" style="display:none" />
+<img class="guides" src="guides2.jpg" style="display:none" />
+<img class="guides" src="guides3.jpg" style="display:none" />
+<img class="guides" src="guides4.jpg" style="display:none" />
+<img class="guides" src="guides5.jpg" style="display:none" />
+<img class="chara" src="char0.jpg" style="display:none" />
+<img class="chara" src="char1.jpg" style="display:none" />
+<img class="chara" src="char2.jpg" style="display:none" />
+<img class="chara" src="char3.jpg" style="display:none" />
+<img class="chara" src="char4.jpg" style="display:none" />
+<img class="chara" src="char5.jpg" style="display:none" />
+<img class="chara" src="char6.jpg" style="display:none" />
+<img class="chara" src="char7.jpg" style="display:none" />
+<img class="leader" src="leader0.png" style="display:none" />
+<img class="leader" src="leader1.png" style="display:none" />
+<img class="subleader" src="subleader0.png" style="display:none" />
+<img class="subleader" src="subleader1.png" style="display:none" />
+<img class="member" src="member0.png" style="display:none" />
+<img class="member" src="member1.png" style="display:none" />
+<img class="hyouka" src="hyouka0.jpg" style="display:none" />
+<img class="hyouka" src="hyouka1.jpg" style="display:none" />
+<img class="hyouka" src="hyouka2.jpg" style="display:none" />
+<img class="hyouka" src="hyouka3.jpg" style="display:none" />
+<img class="hyouka" src="hyouka4.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib0.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib1.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib2.jpg" style="display:none" />
+<img class="yakuwarib" src="yakuwarib3.jpg" style="display:none" />
+<img class="uns" src="un0.jpg" style="display:none" />
+<img class="uns" src="un1.jpg" style="display:none" />
+<img class="uns" src="un2.jpg" style="display:none" />
+<img class="unnotuyosa" src="unnotuyosa0.jpg" style="display:none" />
+<img class="unnotuyosa" src="unnotuyosa1.jpg" style="display:none" />
+<img class="unnotuyosa" src="unnotuyosa2.jpg" style="display:none" />
+<img id="takara" src="takara.gif" style="display:none" />
+</body>
+</html>
